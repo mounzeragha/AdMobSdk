@@ -1,10 +1,10 @@
 package com.oqunet.admob_sdk.models;
 
-public class DummyData {
+public class Advertiser {
     private static String advertiser;
     public static String[] advertisers = {"adidas", "hm", "real-estate"};
 
-    public DummyData() {
+    public Advertiser() {
     }
 
     public static String getAdvertiser() {
@@ -12,6 +12,6 @@ public class DummyData {
     }
 
     public static void setAdvertiser(String advertiser) {
-        DummyData.advertiser = advertiser;
+        Advertiser.advertiser = advertiser;
     }
 }

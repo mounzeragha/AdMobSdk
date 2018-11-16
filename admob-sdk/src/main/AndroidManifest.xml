@@ -7,7 +7,6 @@
 
 
     <application
-        android:name=".AppController"
         android:allowBackup="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -19,8 +18,7 @@
 
         <receiver
             android:name=".receiver.PhoneStateReceiver"
-            android:exported="true"
-            android:permission="">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>

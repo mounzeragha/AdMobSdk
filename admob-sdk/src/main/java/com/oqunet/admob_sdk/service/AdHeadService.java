@@ -20,9 +20,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.oqunet.admob_sdk.AppController;
 import com.oqunet.admob_sdk.DisplayAd;
 import com.oqunet.admob_sdk.R;
+import com.oqunet.admob_sdk.models.Advertiser;
 
 
 public class AdHeadService extends Service {
@@ -68,11 +68,11 @@ public class AdHeadService extends Service {
 
 		adHeadView = (RelativeLayout) inflater.inflate(R.layout.ad_head, null);
 		adHeadImage = (ImageView) adHeadView.findViewById(R.id.ad_head_img);
-		if (AppController.getAdvertiser().equals("adidas")) {
+		if (Advertiser.getAdvertiser().equals("adidas")) {
 			adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_adidas));
-		} else if (AppController.getAdvertiser().equals("hm")) {
+		} else if (Advertiser.getAdvertiser().equals("hm")) {
 			adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_hm));
-		} else if (AppController.getAdvertiser().equals("real-estate")) {
+		} else if (Advertiser.getAdvertiser().equals("real-estate")) {
 			adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_realestate));
 		} else {
 			adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_hm));

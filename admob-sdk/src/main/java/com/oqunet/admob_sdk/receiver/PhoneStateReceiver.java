@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.oqunet.admob_sdk.AppController;
+import com.oqunet.admob_sdk.models.Advertiser;
 import com.oqunet.admob_sdk.service.AdHeadService;
 import com.oqunet.admob_sdk.utils.AppUtils;
 
@@ -20,8 +20,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        String advertiser = AppController.advertisers[new Random().nextInt(AppController.advertisers.length)];
-        AppController.setAdvertiser(advertiser);
+        String advertiser = Advertiser.advertisers[new Random().nextInt(Advertiser.advertisers.length)];
+        Advertiser.setAdvertiser(advertiser);
 
         try {
             Log.d(LOG_TAG, "Receiver start");

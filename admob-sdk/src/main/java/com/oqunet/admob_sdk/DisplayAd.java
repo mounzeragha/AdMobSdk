@@ -1,21 +1,17 @@
 package com.oqunet.admob_sdk;
 
-import android.Manifest;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,6 +23,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.oqunet.admob_sdk.adapters.CarouselAdItemsListAdapter;
 import com.oqunet.admob_sdk.models.CarouselAd;
 import com.oqunet.admob_sdk.models.CarouselAdItem;
+import com.oqunet.admob_sdk.models.Advertiser;
 import com.oqunet.admob_sdk.service.AdHeadService;
 import com.oqunet.admob_sdk.utils.AppUtils;
 import com.oqunet.admob_sdk.utils.ImageUtil;
@@ -58,12 +55,12 @@ public class DisplayAd extends AppCompatActivity {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
 
-        if (AppController.getAdvertiser().equals("adidas")) {
+        if (Advertiser.getAdvertiser().equals("adidas")) {
             showImageAdDialog("https://media.journeys.com/images/c9/1_1100.jpg", "adidas", "Be Faster", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.", "https://sneakernews.com/wp-content/uploads/2018/01/adidas-ad-twinstrike-workshop-2.jpg");
-        } else if (AppController.getAdvertiser().equals("real-estate")) {
+        } else if (Advertiser.getAdvertiser().equals("real-estate")) {
             String videoPath = "android.resource://" + getPackageName() + "/" + R.raw.ad_video;
             showVideoAdDialog("https://pbs.twimg.com/profile_images/497813473166770176/IleP2eO8_400x400.png", "ERA Real Estate", "Finding your next home", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod.", videoPath);
-        } else if (AppController.getAdvertiser().equals("hm")) {
+        } else if (Advertiser.getAdvertiser().equals("hm")) {
             CarouselAd carouselAd = getCarouselAd();
             showCarouselAdDialog("https://pbs.twimg.com/profile_images/793885039360610304/9AfPCAm9_400x400.jpg", "H&M Lebanon", carouselAd.getText(), carouselAd.getCarouselAdItemsList());
         } else {
