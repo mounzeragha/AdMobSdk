@@ -1,6 +1,7 @@
 package com.oqunet.admob_sdk.service;
 
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -47,22 +48,31 @@ public class AdHeadService extends Service {
 		
 	}
 
+	@SuppressLint("ClickableViewAccessibility")
 	private void handleStart(){
+		int LAYOUT_FLAG;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+		} else {
+			LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
+		}
+
 		windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-		LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+		assert inflater != null;
+		removeView = (RelativeLayout) inflater.inflate(R.layout.remove_ad, null);
 
-		removeView = (RelativeLayout)inflater.inflate(R.layout.remove, null);
 		WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
-				WindowManager.LayoutParams.TYPE_PHONE,
+				LAYOUT_FLAG,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 				PixelFormat.TRANSLUCENT);
 		paramRemove.gravity = Gravity.TOP | Gravity.LEFT;
 
 		removeView.setVisibility(View.GONE);
-		removeAdHeadImage = (ImageView)removeView.findViewById(R.id.remove_img);
+		removeAdHeadImage = (ImageView) removeView.findViewById(R.id.remove_img);
 		windowManager.addView(removeView, paramRemove);
 
 
@@ -89,13 +99,15 @@ public class AdHeadService extends Service {
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
-				WindowManager.LayoutParams.TYPE_PHONE,
+				LAYOUT_FLAG,
 				WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 				PixelFormat.TRANSLUCENT);
 		params.gravity = Gravity.TOP | Gravity.LEFT;
 		params.x = 0;
 		params.y = 200;
 		windowManager.addView(adHeadView, params);
+
+
 
 		adHeadView.setOnTouchListener(new View.OnTouchListener() {
 			long time_start = 0, time_end = 0;
@@ -127,7 +139,7 @@ public class AdHeadService extends Service {
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
 						time_start = System.currentTimeMillis();
-						handler_longClick.postDelayed(runnable_longClick, 600);
+						handler_longClick.postDelayed(runnable_longClick, 200);
 
 						remove_img_width = removeAdHeadImage.getLayoutParams().width;
 						remove_img_height = removeAdHeadImage.getLayoutParams().height;

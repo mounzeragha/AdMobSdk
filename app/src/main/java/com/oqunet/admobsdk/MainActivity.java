@@ -41,7 +41,7 @@ public class MainActivity extends RuntimePermissionsActivity {
     public void onPermissionsGranted(int requestCode) {
         if (requestCode == ALL_REQUEST_PERMISSIONS) {
             Log.d("onPermissionsGranted: ", "Permissions Received.");
-            AdMob.showAdAfterCall(this);
+            AdMob.registerPhoneCallsReceiver(this);
 
         }
 
@@ -86,5 +86,11 @@ public class MainActivity extends RuntimePermissionsActivity {
 
         }
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        AdMob.unregisterPhoneCallsReceiver(this);
     }
 }

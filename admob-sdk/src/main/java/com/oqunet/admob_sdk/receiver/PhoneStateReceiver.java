@@ -31,15 +31,11 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             if(state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
                 Log.d(LOG_TAG, "Incoming Call State");
                 Log.d(LOG_TAG, "Ringing State Number is -" + incomingNumber);
-            //    Toast.makeText(context,"Incoming Call State",Toast.LENGTH_SHORT).show();
-            //    Toast.makeText(context,"Ringing State Number is -"+incomingNumber,Toast.LENGTH_SHORT).show();
 
-
-            }
+                }
             if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))){
                 Log.d(LOG_TAG, "Call Received State");
-            //    Toast.makeText(context,"Call Received State",Toast.LENGTH_SHORT).show();
-            }
+                }
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
                 Log.d(LOG_TAG, "Call Idle State");
 
@@ -48,7 +44,6 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                     context.startService(it);
                 }
 
-            //    Toast.makeText(context,"Call Idle State",Toast.LENGTH_SHORT).show();
                 if(state.equals(TelephonyManager.CALL_STATE_OFFHOOK)){
                     //Answered Call which is ended
                 //    Intent showAd = new Intent(context, AdsActivity.class);

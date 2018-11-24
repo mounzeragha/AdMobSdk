@@ -12,7 +12,6 @@
         <activity
             android:name=".DisplayAd"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"/>
 
         <receiver
