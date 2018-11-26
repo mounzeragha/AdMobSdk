@@ -3,11 +3,18 @@ package com.oqunet.admob_sdk.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.evernote.android.job.JobManager;
+import com.evernote.android.job.JobRequest;
 import com.oqunet.admob_sdk.models.Advertiser;
 import com.oqunet.admob_sdk.service.AdHeadService;
+import com.oqunet.admob_sdk.service.DemoJobCreator;
+import com.oqunet.admob_sdk.service.DemoSyncJob;
 import com.oqunet.admob_sdk.utils.AppUtils;
 
 import java.util.Random;
@@ -16,6 +23,7 @@ import java.util.Random;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
     private static final String LOG_TAG = PhoneStateReceiver.class.getSimpleName();
+
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -39,16 +47,29 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)){
                 Log.d(LOG_TAG, "Call Idle State");
 
+                JobManager.create(context).addJobCreator(new DemoJobCreator());
+                new JobRequest.Builder(DemoSyncJob.TAG)
+                        .startNow()
+                        .build()
+                        .schedule();
+
+                /**
+
                 if(AppUtils.canDrawOverlays(context)) {
-                    Intent it = new Intent(context, AdHeadService.class);
-                    context.startService(it);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    //    context.startForegroundService(new Intent(context, AdHeadService.class));
+                        context.startService(new Intent(context, AdHeadService.class));
+                    } else {
+                        context.startService(new Intent(context, AdHeadService.class));
+                    }
+
                 }
+                 */
+
 
                 if(state.equals(TelephonyManager.CALL_STATE_OFFHOOK)){
                     //Answered Call which is ended
-                //    Intent showAd = new Intent(context, AdsActivity.class);
-                //    showAd.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                //    context.startActivity(showAd);
+
                 }
                 if(state.equals(TelephonyManager.CALL_STATE_RINGING)){
                     //Rejected or Missed call

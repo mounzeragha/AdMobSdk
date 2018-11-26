@@ -49,7 +49,7 @@ public class AdHeadService extends Service {
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
-	private void handleStart(){
+	private void handleStart() {
 		int LAYOUT_FLAG;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;

@@ -1,14 +1,14 @@
 package com.oqunet.admob_sdk;
 
-import android.app.Activity;
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.oqunet.admob_sdk.receiver.PhoneStateReceiver;
 
 public class AdMob {
     private static PhoneStateReceiver phoneStateReceiver = new PhoneStateReceiver();
+
 
 
     public static void registerPhoneCallsReceiver(Context context) {
@@ -20,7 +20,11 @@ public class AdMob {
     }
 
     public static void unregisterPhoneCallsReceiver(Context context) {
-        context.unregisterReceiver(phoneStateReceiver);
+        try {
+            context.unregisterReceiver(phoneStateReceiver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
 
