@@ -25,9 +25,6 @@ public class MainActivity extends RuntimePermissionsActivity {
 
         Log.e("MainActivity", "MainActivity Started");
 
-        if(!AppUtils.canDrawOverlays(MainActivity.this)) {
-            requestPermission(OVERLAY_PERMISSION_REQ_CODE_AD_HEAD);
-        }
 
         MainActivity.super.requestAppPermissions(new
                         String[]{Manifest.permission.READ_PHONE_STATE}, R.string
@@ -86,6 +83,14 @@ public class MainActivity extends RuntimePermissionsActivity {
 
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!AppUtils.canDrawOverlays(MainActivity.this)) {
+            requestPermission(OVERLAY_PERMISSION_REQ_CODE_AD_HEAD);
+        }
     }
 
     @Override

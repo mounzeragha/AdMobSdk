@@ -20,12 +20,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
+import com.evernote.android.job.JobManager;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.oqunet.admob_sdk.adapters.CarouselAdItemsListAdapter;
 import com.oqunet.admob_sdk.models.CarouselAd;
 import com.oqunet.admob_sdk.models.CarouselAdItem;
 import com.oqunet.admob_sdk.models.Advertiser;
+import com.oqunet.admob_sdk.models.Job;
 import com.oqunet.admob_sdk.service.AdHeadService;
+import com.oqunet.admob_sdk.service.SeparateProcessService;
 import com.oqunet.admob_sdk.utils.AppUtils;
 import com.oqunet.admob_sdk.utils.ImageUtil;
 
@@ -54,8 +57,10 @@ public class DisplayAd extends AppCompatActivity {
         bottom_sheet = findViewById(R.id.bottom_sheet);
         mBehavior = BottomSheetBehavior.from(bottom_sheet);
 
-        Intent intent = new Intent(DisplayAd.this, AdHeadService.class);
-        stopService(intent);
+        JobManager.instance().cancel(Job.getJobId());
+
+    //    Intent intent = new Intent(DisplayAd.this, SeparateProcessService.class);
+    //    stopService(intent);
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);

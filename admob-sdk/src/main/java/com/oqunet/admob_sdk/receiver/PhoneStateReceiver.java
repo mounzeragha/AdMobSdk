@@ -1,6 +1,7 @@
 package com.oqunet.admob_sdk.receiver;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -12,9 +13,11 @@ import android.widget.Toast;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.oqunet.admob_sdk.models.Advertiser;
+import com.oqunet.admob_sdk.models.Job;
 import com.oqunet.admob_sdk.service.AdHeadService;
 import com.oqunet.admob_sdk.service.DemoJobCreator;
 import com.oqunet.admob_sdk.service.DemoSyncJob;
+import com.oqunet.admob_sdk.service.SeparateProcessService;
 import com.oqunet.admob_sdk.utils.AppUtils;
 
 import java.util.Random;
@@ -48,11 +51,16 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 Log.d(LOG_TAG, "Call Idle State");
 
                 JobManager.create(context).addJobCreator(new DemoJobCreator());
-                new JobRequest.Builder(DemoSyncJob.TAG)
+                int jobId = new JobRequest.Builder(DemoSyncJob.TAG)
                         .startNow()
                         .build()
                         .schedule();
-
+                Job.setJobId(jobId);
+/**
+                ComponentName comp = new ComponentName(context.getPackageName(),
+                        SeparateProcessService.class.getName());
+                SeparateProcessService.enqueueWork(context, (intent.setComponent(comp)));
+*/
                 /**
 
                 if(AppUtils.canDrawOverlays(context)) {

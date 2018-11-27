@@ -1,18 +1,20 @@
 package com.oqunet.admob_sdk.service;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.IntentService;
-import android.content.ComponentName;
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.os.Looper;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,19 +25,12 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
-import com.evernote.android.job.Job;
-import com.evernote.android.job.JobRequest;
 import com.oqunet.admob_sdk.DisplayAd;
 import com.oqunet.admob_sdk.R;
 import com.oqunet.admob_sdk.models.Advertiser;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-import static android.content.Context.WINDOW_SERVICE;
-
-
-public class DemoSyncJob extends Job {
-    private static final String LOG_TAG = DemoSyncJob.class.getSimpleName();
-    public static final String TAG = "ad_job_tag";
+public class SeparateProcessService extends JobIntentService {
+    private static final String LOG_TAG = SeparateProcessService.class.getSimpleName();
     private WindowManager windowManager;
     private RelativeLayout adHeadView, removeView;
 
@@ -44,19 +39,22 @@ public class DemoSyncJob extends Job {
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
     private Point szWindow = new Point();
     private boolean isLeft = true;
+    private String sMsg = "";
+    // Service unique ID
+    static final int SERVICE_JOB_ID = 50;
 
-    @NonNull
-    @Override
-    protected Result onRunJob(@NonNull Params params) {
-        Log.e(LOG_TAG, "onRunJob");
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                handleStart();
-            }
-        });
-        return Result.SUCCESS;
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, SeparateProcessService.class, SERVICE_JOB_ID, work);
     }
+
+
+    @Override
+    protected void onHandleWork(@NonNull Intent intent) {
+        handleStart();
+
+    }
+
+
 
     @SuppressLint("ClickableViewAccessibility")
     private void handleStart() {
@@ -67,13 +65,13 @@ public class DemoSyncJob extends Job {
             LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
         }
 
-        windowManager = (WindowManager) getContext().getSystemService(WINDOW_SERVICE);
+        windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
 
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         assert inflater != null;
         removeView = (RelativeLayout) inflater.inflate(R.layout.remove_ad, null);
 
-        final WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
+        WindowManager.LayoutParams paramRemove = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
@@ -83,21 +81,19 @@ public class DemoSyncJob extends Job {
 
         removeView.setVisibility(View.GONE);
         removeAdHeadImage = (ImageView) removeView.findViewById(R.id.remove_img);
-
         windowManager.addView(removeView, paramRemove);
-
 
 
         adHeadView = (RelativeLayout) inflater.inflate(R.layout.ad_head, null);
         adHeadImage = (ImageView) adHeadView.findViewById(R.id.ad_head_img);
         if (Advertiser.getAdvertiser().equals("adidas")) {
-            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ad_head_adidas));
+            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_adidas));
         } else if (Advertiser.getAdvertiser().equals("hm")) {
-            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ad_head_hm));
+            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_hm));
         } else if (Advertiser.getAdvertiser().equals("real-estate")) {
-            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ad_head_realestate));
+            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_realestate));
         } else {
-            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ad_head_hm));
+            adHeadImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ad_head_hm));
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -108,7 +104,7 @@ public class DemoSyncJob extends Job {
             szWindow.set(w, h);
         }
 
-        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 LAYOUT_FLAG,
@@ -117,8 +113,8 @@ public class DemoSyncJob extends Job {
         params.gravity = Gravity.TOP | Gravity.LEFT;
         params.x = 0;
         params.y = 200;
-
         windowManager.addView(adHeadView, params);
+
 
 
         adHeadView.setOnTouchListener(new View.OnTouchListener() {
@@ -228,9 +224,7 @@ public class DemoSyncJob extends Job {
                         handler_longClick.removeCallbacks(runnable_longClick);
 
                         if(inBounded){
-                            if(adHeadView != null){
-                                windowManager.removeView(adHeadView);
-                            }
+                            stopService(new Intent(SeparateProcessService.this, SeparateProcessService.class));
                             inBounded = false;
                             break;
                         }
@@ -267,6 +261,47 @@ public class DemoSyncJob extends Job {
                 return true;
             }
         });
+
+
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        // TODO Auto-generated method stub
+        super.onConfigurationChanged(newConfig);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            windowManager.getDefaultDisplay().getSize(szWindow);
+        } else {
+            int w = windowManager.getDefaultDisplay().getWidth();
+            int h = windowManager.getDefaultDisplay().getHeight();
+            szWindow.set(w, h);
+        }
+
+        WindowManager.LayoutParams layoutParams = (WindowManager.LayoutParams) adHeadView.getLayoutParams();
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Log.d(LOG_TAG, "PollHeadService.onConfigurationChanged -> landscape");
+
+            if(layoutParams.y + (adHeadView.getHeight() + getStatusBarHeight()) > szWindow.y){
+                layoutParams.y = szWindow.y- (adHeadView.getHeight() + getStatusBarHeight());
+                windowManager.updateViewLayout(adHeadView, layoutParams);
+            }
+
+            if(layoutParams.x != 0 && layoutParams.x < szWindow.x){
+                resetPosition(szWindow.x);
+            }
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Log.d(LOG_TAG, "PollHeadService.onConfigurationChanged -> portrait");
+
+            if(layoutParams.x > szWindow.x){
+                resetPosition(szWindow.x);
+            }
+
+        }
+
     }
 
     private void resetPosition(int x_cord_now) {
@@ -330,20 +365,13 @@ public class DemoSyncJob extends Job {
     }
 
     private int getStatusBarHeight() {
-        int statusBarHeight = (int) Math.ceil(25 * getContext().getResources().getDisplayMetrics().density);
+        int statusBarHeight = (int) Math.ceil(25 * getApplicationContext().getResources().getDisplayMetrics().density);
         return statusBarHeight;
     }
 
     private void pollHeadClick(){
-        if(adHeadView != null){
-            windowManager.removeView(adHeadView);
-        }
-
-        if(removeView != null){
-            windowManager.removeView(removeView);
-        }
-        Intent intent = new Intent(getContext(), DisplayAd.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        getContext().startActivity(intent);
+        Intent intent = new Intent(this, DisplayAd.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
 
     }
 
@@ -361,13 +389,41 @@ public class DemoSyncJob extends Job {
     }
 
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // TODO Auto-generated method stub
+        Log.d(LOG_TAG, "PollHeadService.onStartCommand() -> startId=" + startId);
 
-    public static void scheduleJob() {
-        new JobRequest.Builder(DemoSyncJob.TAG)
-                .setExecutionWindow(30_000L, 40_000L)
-                .build()
-                .schedule();
+        if(startId == Service.START_STICKY) {
+            handleStart();
+            return super.onStartCommand(intent, flags, startId);
+        }else{
+            return  Service.START_NOT_STICKY;
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        // TODO Auto-generated method stub
+        super.onDestroy();
+
+        if(adHeadView != null){
+            windowManager.removeView(adHeadView);
+        }
+
+        if(removeView != null){
+            windowManager.removeView(removeView);
+        }
+
     }
 
 
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO Auto-generated method stub
+        Log.d(LOG_TAG, "PollHeadService.onBind()");
+        return null;
+    }
 }
