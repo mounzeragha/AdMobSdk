@@ -1,13 +1,29 @@
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your Android App for development and testing purposes.
 
-### Prerequisites
+### How to
 
-What things you need to install the software and how to install them
+To get a Git project into your build:
+
+Step 1. Add the JitPack repository to your build file
+Add it in your root build.gradle at the end of repositories:
 
 ```
-Give examples
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+
+Step 2. Add the dependency
+
+```
+	dependencies {
+	        implementation 'com.github.mounzeragha:MobAdSdk:0.1.8'
+	}
 ```
 
 ### Installing
