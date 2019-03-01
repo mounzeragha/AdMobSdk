@@ -37,7 +37,7 @@ Include the code below in your MainActivity:
         super.onCreate(savedInstanceState);
        ...
         
-	//Initilaze MobAd
+	//initialize MobAd
         mobAd = new MobAd(this);
 
         if (mobAd.hasReadPhoneStatePermission()) {
