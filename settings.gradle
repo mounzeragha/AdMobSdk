@@ -1,1 +1,1 @@
-include ':app', ':admobsdk', ':admob-sdk'
+include ':app', ':mobadsdk', ':mobad-sdk'

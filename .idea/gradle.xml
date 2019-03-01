@@ -8,9 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/admob-sdk" />
-            <option value="$PROJECT_DIR$/admobsdk" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/mobad-sdk" />
+            <option value="$PROJECT_DIR$/mobadsdk" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
