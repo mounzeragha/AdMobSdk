@@ -23,30 +23,22 @@ Step 2. Add the dependency
 
 ```
 	dependencies {
-	        implementation 'com.github.mounzeragha:MobAdSdk:0.1.8'
+	        implementation 'com.github.mounzeragha:MobAdSdk:0.1.9'
 	}
 ```
 
 ### How to use:
 
-Include the code below in your MainActivity:
+Include the code below to your MainActivity:
 
 ```
  @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        ...
-        
-	//initialize MobAd
-        mobAd = new MobAd(this);
 
-        if (mobAd.hasReadPhoneStatePermission()) {
-            //You already have the permission, just go ahead.
-            mobAd.registerPhoneCallsReceiver();
-        } else {
-            //request the permission
-            mobAd.requestReadPhoneStatePermission();
-        }
+        //Initialize mobAd.
+        mobAd = new MobAd(this);
 	
 	...
 
@@ -55,8 +47,19 @@ Include the code below in your MainActivity:
     @Override
     protected void onResume() {
         super.onResume();
-        //request overlay permission if it has not granted.
+         
+	//request overlay permission if it has not been granted.
         mobAd.requestDrawOverAppsPermission();
+
+        //request read phone state permission.
+        if (mobAd.hasReadPhoneStatePermission()) {
+            //You already have the permission, just go ahead.
+            mobAd.registerPhoneCallsReceiver();
+        } else {
+            //request the permission.
+            mobAd.requestReadPhoneStatePermission();
+        }
+	
     }
 
     @Override
@@ -65,7 +68,7 @@ Include the code below in your MainActivity:
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
-            Log.d("onPermissionsGranted: ", "Read Phone State Permission Granted.");
+            Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
             mobAd.registerPhoneCallsReceiver();
         }
 
