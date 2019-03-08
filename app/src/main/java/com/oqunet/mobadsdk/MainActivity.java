@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.oqunet.admob_sdk.MobAd;
+import com.oqunet.mobad_sdk.MobAd;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -17,25 +17,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.e("MainActivity", "MainActivity Started");
+        Log.i(LOG_TAG, "MainActivity Started");
 
+        //Initialize mobAd.
         mobAd = new MobAd(this);
-
-        if (mobAd.hasReadPhoneStatePermission()) {
-            //You already have the permission, just go ahead.
-            mobAd.registerPhoneCallsReceiver();
-        } else {
-            //request the permission
-            mobAd.requestReadPhoneStatePermission();
-        }
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //request overlay permission if it has not granted.
+
+        //request overlay permission if it has not been granted.
         mobAd.requestDrawOverAppsPermission();
+
+        //request read phone state permission.
+        if (mobAd.hasReadPhoneStatePermission()) {
+            //You already have the permission, just go ahead.
+            mobAd.registerPhoneCallsReceiver();
+        } else {
+            //request the permission.
+            mobAd.requestReadPhoneStatePermission();
+        }
     }
 
     @Override
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
-            Log.d("onPermissionsGranted: ", "Read Phone State Permission Granted.");
+            Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
             mobAd.registerPhoneCallsReceiver();
         }
 

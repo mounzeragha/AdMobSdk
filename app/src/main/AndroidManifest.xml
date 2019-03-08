@@ -18,7 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.oqunet.admob_sdk.MobAd"/>
+        <activity android:name="com.oqunet.mobad_sdk.MobAd"/>
 
     </application>
 
