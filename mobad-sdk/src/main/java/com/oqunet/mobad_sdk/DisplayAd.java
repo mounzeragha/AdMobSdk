@@ -31,6 +31,7 @@ import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
 import com.oqunet.mobad_sdk.retrofit.HandelErrors;
 import com.oqunet.mobad_sdk.retrofit.entity.Action;
+import com.oqunet.mobad_sdk.utils.Constants;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 import com.oqunet.mobad_sdk.utils.ImageUtil;
 
@@ -81,23 +82,30 @@ public class DisplayAd extends AppCompatActivity {
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
 
         if (ad.getFormat().equals("Image")) {
-            showImageAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), ad.getAdDescription(), "http://" + ad.getAdPath(), ad.getButtonLink());
+            showImageAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+                    ad.getAdTitle(), ad.getAdDescription(), "http://" + ad.getAdPath(),
+                    ad.getButtonLink(), ad.getButtonName());
         } else if (ad.getFormat().equals("Video")) {
-            showVideoAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), ad.getAdDescription(), ad.getAdPath(), ad.getButtonLink());
+            showVideoAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+                    ad.getAdTitle(), ad.getAdDescription(), "http://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath(), ad.getButtonLink(),
+                    ad.getButtonName());
         } else if (ad.getFormat().equals("Text")) {
-            showTextAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), ad.getAdDescription(), ad.getButtonLink());
+            showTextAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+                    ad.getAdTitle(), ad.getAdDescription(), ad.getButtonLink(), ad.getButtonName());
         } else if (ad.getFormat().equals("Carousel")) {
             carouselAdItems = AppDatabase.getInstance(this).getCarouselAdItemDao().loadCarouselItems();
             showCarouselAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), carouselAdItems);
             Toast.makeText(DisplayAd.this, "Text Carousel!", Toast.LENGTH_SHORT).show();
         }
 
-        sendAdAction("Viewed");
+        sendAdAction(Constants.KEY_VIEWED);
 
 
     }
 
-    private void showImageAdDialog(String advertiserIcon, String advertiserName, String adHeadLine, String adDescription, String adImage, final String path) {
+    private void showImageAdDialog(String advertiserIcon, String advertiserName, String adHeadLine,
+                                   String adDescription, String adImage, final String path,
+                                   String buttonName) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.ad_image_layout);
@@ -115,21 +123,24 @@ public class DisplayAd extends AppCompatActivity {
         ((TextView) dialog.findViewById(R.id.advertiser_name)).setText(advertiserName);
         ((TextView) dialog.findViewById(R.id.title)).setText(adHeadLine);
         ((TextView) dialog.findViewById(R.id.description)).setText(adDescription);
+        ((TextView) dialog.findViewById(R.id.btn_cta)).setText(buttonName);
         (dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
                 dialog.hide();
                 finish();
             }
         });
 
-        (dialog.findViewById(R.id.btn_download)).setOnClickListener(new View.OnClickListener() {
+        (dialog.findViewById(R.id.btn_cta)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendAdAction("Clicked");
+                sendAdAction(Constants.KEY_CLICKED);
                 dialog.hide();
                 finish();
                 MobAdUtils.openWebUrlExternal(DisplayAd.this, path);
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
 
             }
         });
@@ -141,7 +152,8 @@ public class DisplayAd extends AppCompatActivity {
 
     }
 
-    private void showTextAdDialog(String advertiserIcon, String advertiserName, String adHeadLine, String adDescription, final String path) {
+    private void showTextAdDialog(String advertiserIcon, String advertiserName, String adHeadLine,
+                                  String adDescription, final String path, String buttonName) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.ad_text_layout);
@@ -158,21 +170,24 @@ public class DisplayAd extends AppCompatActivity {
         ((TextView) dialog.findViewById(R.id.advertiser_name)).setText(advertiserName);
         ((TextView) dialog.findViewById(R.id.title)).setText(adHeadLine);
         ((TextView) dialog.findViewById(R.id.description)).setText(adDescription);
+        ((TextView) dialog.findViewById(R.id.btn_cta)).setText(buttonName);
         (dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
                 dialog.hide();
                 finish();
             }
         });
 
-        (dialog.findViewById(R.id.btn_download)).setOnClickListener(new View.OnClickListener() {
+        (dialog.findViewById(R.id.btn_cta)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendAdAction("Clicked");
+                sendAdAction(Constants.KEY_CLICKED);
                 dialog.hide();
                 finish();
                 MobAdUtils.openWebUrlExternal(DisplayAd.this, path);
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
 
             }
         });
@@ -184,7 +199,9 @@ public class DisplayAd extends AppCompatActivity {
 
     }
 
-    private void showVideoAdDialog(String advertiserIcon, String advertiserName, String adHeadLine, String adDescription, String adVideo, final String path) {
+    private void showVideoAdDialog(String advertiserIcon, String advertiserName, String adHeadLine,
+                                   String adDescription, String adVideo, final String path,
+                                   String buttonName) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.ad_video_layout);
@@ -211,22 +228,25 @@ public class DisplayAd extends AppCompatActivity {
         ((TextView) dialog.findViewById(R.id.advertiser_name)).setText(advertiserName);
         ((TextView) dialog.findViewById(R.id.title)).setText(adHeadLine);
         ((TextView) dialog.findViewById(R.id.description)).setText(adDescription);
+        ((TextView) dialog.findViewById(R.id.btn_cta)).setText(buttonName);
         (dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-        //        MxVideoPlayer.releaseAllVideos();
+                //        MxVideoPlayer.releaseAllVideos();
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
                 dialog.hide();
                 finish();
             }
         });
 
-        (dialog.findViewById(R.id.btn_download)).setOnClickListener(new View.OnClickListener() {
+        (dialog.findViewById(R.id.btn_cta)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendAdAction("Clicked");
+                sendAdAction(Constants.KEY_CLICKED);
                 dialog.hide();
                 finish();
                 MobAdUtils.openWebUrlExternal(DisplayAd.this, path);
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
 
             }
         });
@@ -239,7 +259,8 @@ public class DisplayAd extends AppCompatActivity {
     }
 
 
-    private void showCarouselAdDialog(String advertiserIcon, String advertiserName, String adText, List<com.oqunet.mobad_sdk.database.entity.CarouselAdItem> carouselAdItems) {
+    private void showCarouselAdDialog(String advertiserIcon, String advertiserName, String adText,
+                                      List<com.oqunet.mobad_sdk.database.entity.CarouselAdItem> carouselAdItems) {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.ad_carousel_layout);
@@ -266,11 +287,12 @@ public class DisplayAd extends AppCompatActivity {
         carouselAdItemsListAdapter.setOnItemClickListener(new CarouselAdItemsListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, com.oqunet.mobad_sdk.database.entity.CarouselAdItem carouselAdItem, int position) {
-                sendAdAction("Clicked");
+                sendAdAction(Constants.KEY_CLICKED);
                 dialog.hide();
                 finish();
                 //    MobAdUtils.openWebUrlExternal(AdsActivity.this, "https://www.hm.com/lb");
-                MobAdUtils.startNewActivity(DisplayAd.this, "com.oqunet.ipaycards");
+                MobAdUtils.startNewActivity(DisplayAd.this, "com.oqunet.mobad");
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
 
             }
 
@@ -279,6 +301,7 @@ public class DisplayAd extends AppCompatActivity {
         (dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
                 dialog.hide();
                 finish();
             }
@@ -309,7 +332,7 @@ public class DisplayAd extends AppCompatActivity {
                         Action adActionResult = response.body();
                         assert adActionResult != null;
                         if (adActionResult.getStatus().equals("Success")) {
-                        //    Toast.makeText(DisplayAd.this, adActionResult.getMessage(), Toast.LENGTH_SHORT).show();
+                            //    Toast.makeText(DisplayAd.this, adActionResult.getMessage(), Toast.LENGTH_SHORT).show();
                             toastMessageFloatingImage(adActionResult.getMessage());
                         }
 

@@ -41,6 +41,7 @@ public class Ad {
     @ColumnInfo(name = "button_destination")
     private String buttonDestination;
 
+
     public Ad() {
     }
 

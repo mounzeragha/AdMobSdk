@@ -73,7 +73,7 @@ public class ImageUtil {
 	private static final DisplayImageOptions DEFAULT_DISPLAY_IMAGE_OPTIONS = DEFAULT_DISPLAY_IMAGE_OPTIONS_BUIDLER
 			.build();
 	private static final DisplayImageOptions DEFAULT_DISPLAY_ROUNDED_IMAGE_OPTIONS = DEFAULT_DISPLAY_ROUNDED_IMAGE_OPTIONS_BUIDLER
-			.build();
+			.displayer(new RoundedBitmapDisplayer(500)).build();
 	private static final DisplayImageOptions ROUND_CORNERS_DISPLAY_IMAGE_OPTIONS = DEFAULT_DISPLAY_IMAGE_OPTIONS_BUIDLER
 			.displayer(new RoundedBitmapDisplayer(30)).build();
 	private static final DisplayImageOptions ROUND_DISPLAY_IMAGE_OPTIONS = DEFAULT_DISPLAY_IMAGE_OPTIONS_BUIDLER

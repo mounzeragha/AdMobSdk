@@ -1,6 +1,7 @@
 package com.oqunet.mobad_sdk.service;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -10,15 +11,19 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.v4.view.ViewCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -119,6 +124,7 @@ public class SyncJob extends Job {
 
         windowManager.addView(adHeadView, params);
 
+        playAdHeadAnimation();
 
         adHeadView.setOnTouchListener(new View.OnTouchListener() {
             long time_start = 0, time_end = 0;
@@ -240,7 +246,7 @@ public class SyncJob extends Job {
                         if(Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5){
                             time_end = System.currentTimeMillis();
                             if((time_end - time_start) < 300){
-                                pollHeadClick(ad);
+                                adHeadClick(ad);
                             }
                         }
 
@@ -332,7 +338,7 @@ public class SyncJob extends Job {
         return statusBarHeight;
     }
 
-    private void pollHeadClick(com.oqunet.mobad_sdk.database.entity.Ad ad){
+    private void adHeadClick(com.oqunet.mobad_sdk.database.entity.Ad ad){
         if(adHeadView != null){
             windowManager.removeView(adHeadView);
         }
@@ -371,6 +377,7 @@ public class SyncJob extends Job {
     }
 
     private void getAd() {
+
         apiService = ApiClient.getClient().create(ApiService.class);
         handelErrors = new HandelErrors(getContext());
         String deviceId = MobAdUtils.getDeviceID(getContext());
@@ -399,7 +406,6 @@ public class SyncJob extends Job {
                             ad.setButtonName(adRequested.getButtonName());
                             ad.setButtonLink(adRequested.getButtonLink());
                             ad.setButtonDestination(adRequested.getButtonDestination());
-                            AppDatabase.getInstance(getContext()).getAdDao().deleteTable();
                             AppDatabase.getInstance(getContext()).getAdDao().insertAd(ad);
                             if (adRequested.getFormat().equals("Carousel")) {
                                 AppDatabase.getInstance(getContext()).getCarouselAdItemDao().deleteTable();
@@ -426,8 +432,6 @@ public class SyncJob extends Job {
 
                         }
 
-
-
                     }
 
 
@@ -444,6 +448,12 @@ public class SyncJob extends Job {
             }
 
         });
+    }
+
+    private void playAdHeadAnimation() {
+        YoYo.with(Techniques.FadeIn)
+                .duration(700)
+                .playOn(adHeadView);
     }
 
 

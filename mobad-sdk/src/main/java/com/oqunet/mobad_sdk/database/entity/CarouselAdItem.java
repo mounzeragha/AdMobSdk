@@ -11,6 +11,9 @@ public class CarouselAdItem {
     @ColumnInfo(name = "id")
     private long id;
 
+    @ColumnInfo(name = "ad_id")
+    private int adId;
+
     @ColumnInfo(name = "title")
     private String title;
 
@@ -38,6 +41,14 @@ public class CarouselAdItem {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getAdId() {
+        return adId;
+    }
+
+    public void setAdId(int adId) {
+        this.adId = adId;
     }
 
     public String getTitle() {
@@ -86,5 +97,19 @@ public class CarouselAdItem {
 
     public void setButtonDestination(String buttonDestination) {
         this.buttonDestination = buttonDestination;
+    }
+
+    @Override
+    public String toString() {
+        return "CarouselAdItem{" +
+                "id=" + id +
+                ", adId=" + adId +
+                ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                ", description='" + description + '\'' +
+                ", buttonName='" + buttonName + '\'' +
+                ", buttonLink='" + buttonLink + '\'' +
+                ", buttonDestination='" + buttonDestination + '\'' +
+                '}';
     }
 }

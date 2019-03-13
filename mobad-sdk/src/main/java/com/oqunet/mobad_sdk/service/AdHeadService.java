@@ -42,7 +42,7 @@ public class AdHeadService extends Service {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		Log.d(LOG_TAG, "PollHeadService.onCreate()");
+		Log.d(LOG_TAG, "AdHeadService.onCreate()");
 		
 	}
 

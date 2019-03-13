@@ -65,7 +65,7 @@ public class CarouselAdItemsListAdapter extends RecyclerView.Adapter<RecyclerVie
         ImageUtil.displayImage(itemViewHolder.image, carouselAdItem.getImage(), null);
         itemViewHolder.headline.setText(carouselAdItem.getTitle());
         itemViewHolder.description.setText(carouselAdItem.getDescription());
-        itemViewHolder.buttonCallToAction.setText("Learn More");
+        itemViewHolder.buttonCallToAction.setText(carouselAdItem.getButtonName());
         itemViewHolder.buttonCallToAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

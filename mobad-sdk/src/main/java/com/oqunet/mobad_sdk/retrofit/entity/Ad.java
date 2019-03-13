@@ -131,4 +131,21 @@ public class Ad {
     public void setCarouselAdItems(ArrayList<CarouselAdItem> carouselAdItems) {
         this.carouselAdItems = carouselAdItems;
     }
+
+    @Override
+    public String toString() {
+        return "Ad{" +
+                "advertiserName='" + advertiserName + '\'' +
+                ", advertiserImage='" + advertiserImage + '\'' +
+                ", format='" + format + '\'' +
+                ", adTitle='" + adTitle + '\'' +
+                ", adDescription='" + adDescription + '\'' +
+                ", adPath='" + adPath + '\'' +
+                ", adId=" + adId +
+                ", buttonName='" + buttonName + '\'' +
+                ", buttonLink='" + buttonLink + '\'' +
+                ", buttonDestination='" + buttonDestination + '\'' +
+                ", carouselAdItems=" + carouselAdItems +
+                '}';
+    }
 }

@@ -11,7 +11,7 @@ import com.oqunet.mobad_sdk.database.entity.Ad;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 
 
-@Database(entities = {Ad.class, CarouselAdItem.class}, version = 2, exportSchema = false)
+@Database(entities = {Ad.class, CarouselAdItem.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public static final String DB_NAME = "admob_db";
