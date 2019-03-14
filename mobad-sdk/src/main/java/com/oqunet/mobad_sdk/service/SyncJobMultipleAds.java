@@ -299,7 +299,7 @@ public class SyncJobMultipleAds extends Job {
             assert inflater != null;
             adHeadView[i] = (RelativeLayout) inflater.inflate(R.layout.ad_head, null);
             ImageView adHeadImage = (ImageView) adHeadView[i].findViewById(R.id.ad_head_img);
-            ImageUtil.displayRoundImage(adHeadImage, "http://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(adHeadImage, "https://" + ad.getAdvertiserImage(), null);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 windowManager.getDefaultDisplay().getSize(szWindow);

@@ -82,19 +82,19 @@ public class DisplayAd extends AppCompatActivity {
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
 
         if (ad.getFormat().equals("Image")) {
-            showImageAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
-                    ad.getAdTitle(), ad.getAdDescription(), "http://" + ad.getAdPath(),
+            showImageAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+                    ad.getAdTitle(), ad.getAdDescription(), "https://" + ad.getAdPath(),
                     ad.getButtonLink(), ad.getButtonName());
         } else if (ad.getFormat().equals("Video")) {
-            showVideoAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
-                    ad.getAdTitle(), ad.getAdDescription(), "http://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath(), ad.getButtonLink(),
+            showVideoAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+                    ad.getAdTitle(), ad.getAdDescription(), "https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath(), ad.getButtonLink(),
                     ad.getButtonName());
         } else if (ad.getFormat().equals("Text")) {
-            showTextAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
+            showTextAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
                     ad.getAdTitle(), ad.getAdDescription(), ad.getButtonLink(), ad.getButtonName());
         } else if (ad.getFormat().equals("Carousel")) {
             carouselAdItems = AppDatabase.getInstance(this).getCarouselAdItemDao().loadCarouselItems();
-            showCarouselAdDialog("http://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), carouselAdItems);
+            showCarouselAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), carouselAdItems);
             Toast.makeText(DisplayAd.this, "Text Carousel!", Toast.LENGTH_SHORT).show();
         }
 
@@ -214,9 +214,10 @@ public class DisplayAd extends AppCompatActivity {
 
         ImageView advertiserBrandIcon = dialog.findViewById(R.id.advertiser_icon);
         ImageUtil.displayRoundImage(advertiserBrandIcon, advertiserIcon, null);
-        MxVideoPlayerWidget videoView = dialog.findViewById(R.id.ad_video);
+        final MxVideoPlayerWidget videoView = dialog.findViewById(R.id.ad_video);
         videoView.autoStartPlay(adVideo,
                 MxVideoPlayer.SCREEN_LAYOUT_NORMAL, adHeadLine);
+        videoView.mBottomProgressBar.setVisibility(View.INVISIBLE);
 
 
         /**
@@ -232,8 +233,8 @@ public class DisplayAd extends AppCompatActivity {
         (dialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //        MxVideoPlayer.releaseAllVideos();
                 AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
+                videoView.release();
                 dialog.hide();
                 finish();
             }
@@ -243,10 +244,12 @@ public class DisplayAd extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sendAdAction(Constants.KEY_CLICKED);
+                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
+                videoView.release();
                 dialog.hide();
                 finish();
                 MobAdUtils.openWebUrlExternal(DisplayAd.this, path);
-                AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
+
 
             }
         });

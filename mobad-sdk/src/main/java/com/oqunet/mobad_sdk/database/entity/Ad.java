@@ -3,9 +3,11 @@ package com.oqunet.mobad_sdk.database.entity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 @Entity(tableName = "Ad")
-public class Ad {
+public class Ad implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -43,6 +45,21 @@ public class Ad {
 
 
     public Ad() {
+    }
+
+    private Ad(Parcel in) {
+        super();
+        this.id = in.readLong();
+        this.advertiserName = in.readString();
+        this.advertiserImage = in.readString();
+        this.format = in.readString();
+        this.adTitle = in.readString();
+        this.adDescription = in.readString();
+        this.adPath = in.readString();
+        this.adId = in.readInt();
+        this.buttonName = in.readString();
+        this.buttonLink = in.readString();
+        this.buttonDestination = in.readString();
     }
 
     public long getId() {
@@ -132,6 +149,38 @@ public class Ad {
     public void setButtonDestination(String buttonDestination) {
         this.buttonDestination = buttonDestination;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(getId());
+        dest.writeString(getAdvertiserName());
+        dest.writeString(getAdvertiserImage());
+        dest.writeString(getFormat());
+        dest.writeString(getAdTitle());
+        dest.writeString(getAdDescription());
+        dest.writeString(getAdPath());
+        dest.writeInt(getAdId());
+        dest.writeString(getButtonName());
+        dest.writeString(getButtonLink());
+        dest.writeString(getButtonDestination());
+
+
+    }
+
+    public static final Creator<Ad> CREATOR = new Creator<Ad>() {
+        public Ad createFromParcel(Parcel in) {
+            return new Ad(in);
+        }
+
+        public Ad[] newArray(int size) {
+            return new Ad[size];
+        }
+    };
 
     @Override
     public String toString() {
