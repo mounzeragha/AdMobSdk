@@ -16,6 +16,10 @@
             android:name=".DisplayAd"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.Transparent" />
+        <activity
+            android:name=".DisplayExtraAd"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:theme="@style/Theme.Transparent" />
 
         <receiver
             android:name=".receiver.PhoneStateReceiver"

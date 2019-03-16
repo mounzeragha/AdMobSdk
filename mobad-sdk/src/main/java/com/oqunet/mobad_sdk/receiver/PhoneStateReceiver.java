@@ -8,15 +8,9 @@ import android.util.Log;
 
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
-import com.oqunet.mobad_sdk.database.JobId;
-import com.oqunet.mobad_sdk.models.Advertiser;
 import com.oqunet.mobad_sdk.models.Job;
-import com.oqunet.mobad_sdk.service.JobCreator;
-import com.oqunet.mobad_sdk.service.SyncJob;
-import com.oqunet.mobad_sdk.service.SyncJobMultipleAds;
-import com.oqunet.mobad_sdk.utils.Constants;
-
-import java.util.Random;
+import com.oqunet.mobad_sdk.service.AdJobCreator;
+import com.oqunet.mobad_sdk.service.SyncAdJob;
 
 
 public class PhoneStateReceiver extends BroadcastReceiver {
@@ -44,8 +38,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 Log.d(LOG_TAG, "Call Idle State");
 
-                JobManager.create(context).addJobCreator(new JobCreator());
-                jobId = new JobRequest.Builder(SyncJob.TAG)
+                JobManager.create(context).addJobCreator(new AdJobCreator());
+                jobId = new JobRequest.Builder(SyncAdJob.TAG)
                         .setUpdateCurrent(true)
                         .startNow()
                         .build()

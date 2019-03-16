@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +25,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.oqunet.mobad_sdk.adapters.CarouselAdItemsListAdapter;
 import com.oqunet.mobad_sdk.database.AppDatabase;
 import com.oqunet.mobad_sdk.database.entity.Ad;
+import com.oqunet.mobad_sdk.fragments.AdsFragmentDialog;
 import com.oqunet.mobad_sdk.models.Job;
 import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
@@ -44,7 +44,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class DisplayAd extends AppCompatActivity {
+public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.ShowingAdInterface {
     private static final String LOG_TAG = DisplayAd.class.getSimpleName();
     private ImageView closeAd;
     private BottomSheetBehavior mBehavior;
@@ -81,10 +81,18 @@ public class DisplayAd extends AppCompatActivity {
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
 
+        AdsFragmentDialog adsFragmentDialog = new AdsFragmentDialog();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("ad", ad);
+        adsFragmentDialog.setArguments(bundle);
+        adsFragmentDialog.show(getSupportFragmentManager(), AdsFragmentDialog.ARG_ITEM_ID);
+
+        /**
         if (ad.getFormat().equals("Image")) {
             showImageAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
                     ad.getAdTitle(), ad.getAdDescription(), "https://" + ad.getAdPath(),
                     ad.getButtonLink(), ad.getButtonName());
+
         } else if (ad.getFormat().equals("Video")) {
             showVideoAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(),
                     ad.getAdTitle(), ad.getAdDescription(), "https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath(), ad.getButtonLink(),
@@ -97,8 +105,9 @@ public class DisplayAd extends AppCompatActivity {
             showCarouselAdDialog("https://" + ad.getAdvertiserImage(), ad.getAdvertiserName(), ad.getAdTitle(), carouselAdItems);
             Toast.makeText(DisplayAd.this, "Text Carousel!", Toast.LENGTH_SHORT).show();
         }
+         */
 
-        sendAdAction(Constants.KEY_VIEWED);
+        //    sendAdAction(Constants.KEY_VIEWED);
 
 
     }
@@ -217,7 +226,6 @@ public class DisplayAd extends AppCompatActivity {
         final MxVideoPlayerWidget videoView = dialog.findViewById(R.id.ad_video);
         videoView.autoStartPlay(adVideo,
                 MxVideoPlayer.SCREEN_LAYOUT_NORMAL, adHeadLine);
-        videoView.mBottomProgressBar.setVisibility(View.INVISIBLE);
 
 
         /**
@@ -374,5 +382,11 @@ public class DisplayAd extends AppCompatActivity {
         toast.setView(customView);
         toast.show();
     }
+
+    @Override
+    public void onShownAd() {
+        finish();
+    }
+
 
 }
