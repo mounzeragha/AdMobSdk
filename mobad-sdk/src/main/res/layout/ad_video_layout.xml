@@ -82,7 +82,7 @@
                 android:layout_marginEnd="26dp"/>
 
 
-            <hb.xvideoplayer.MxVideoPlayerWidget
+            <WebView
                 android:id="@+id/ad_video"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
@@ -99,7 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:background="@drawable/selector_button_white"
+                    android:background="@drawable/selector_button_grey"
                     android:padding="8dp"
                     android:text="Learn More"
                     android:textSize="14sp"
@@ -158,6 +158,14 @@
                     android:text="message"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                     android:textColor="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:text="Touch to discover your rewards..."
+                    android:textSize="10sp"
+                    android:textColor="@color/congratulations_color" />
 
             </LinearLayout>
 

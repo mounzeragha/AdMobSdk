@@ -2,6 +2,7 @@ package com.oqunet.mobad_sdk;
 
 import android.app.Dialog;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 
 import com.evernote.android.job.JobManager;
@@ -37,8 +39,6 @@ import com.oqunet.mobad_sdk.utils.ImageUtil;
 
 import java.util.List;
 
-import hb.xvideoplayer.MxVideoPlayer;
-import hb.xvideoplayer.MxVideoPlayerWidget;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -72,8 +72,6 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
         parent_view = findViewById(android.R.id.content);
         bottom_sheet = findViewById(R.id.bottom_sheet);
         mBehavior = BottomSheetBehavior.from(bottom_sheet);
-
-        JobManager.instance().cancel(Job.getJobId());
 
         adId = getIntent().getIntExtra("ad_id", 0);
         ad = AppDatabase.getInstance(this).getAdDao().loadAd(adId);
@@ -223,16 +221,10 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
 
         ImageView advertiserBrandIcon = dialog.findViewById(R.id.advertiser_icon);
         ImageUtil.displayRoundImage(advertiserBrandIcon, advertiserIcon, null);
-        final MxVideoPlayerWidget videoView = dialog.findViewById(R.id.ad_video);
-        videoView.autoStartPlay(adVideo,
-                MxVideoPlayer.SCREEN_LAYOUT_NORMAL, adHeadLine);
-
-
-        /**
-         VideoView advertiserAdVideo = dialog.findViewById(R.id.ad_video);
+        VideoView advertiserAdVideo = dialog.findViewById(R.id.ad_video);
          advertiserAdVideo.setVideoURI(Uri.parse(adVideo));
          advertiserAdVideo.start();
-         */
+
 
         ((TextView) dialog.findViewById(R.id.advertiser_name)).setText(advertiserName);
         ((TextView) dialog.findViewById(R.id.title)).setText(adHeadLine);
@@ -242,7 +234,6 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
             @Override
             public void onClick(View view) {
                 AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
-                videoView.release();
                 dialog.hide();
                 finish();
             }
@@ -253,7 +244,6 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
             public void onClick(View v) {
                 sendAdAction(Constants.KEY_CLICKED);
                 AppDatabase.getInstance(DisplayAd.this).getAdDao().deleteAd(ad);
-                videoView.release();
                 dialog.hide();
                 finish();
                 MobAdUtils.openWebUrlExternal(DisplayAd.this, path);
@@ -387,6 +377,7 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
     public void onShownAd() {
         finish();
     }
+
 
 
 }

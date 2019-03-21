@@ -28,6 +28,7 @@ import com.oqunet.mobad_sdk.R;
 import com.oqunet.mobad_sdk.database.AppDatabase;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 import com.oqunet.mobad_sdk.database.entity.ExtraAd;
+import com.oqunet.mobad_sdk.fragments.AdsFragmentDialog;
 import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
 import com.oqunet.mobad_sdk.retrofit.HandelErrors;
@@ -344,7 +345,8 @@ public class SyncAdJob extends Job {
         if(removeView != null){
             windowManager.removeView(removeView);
         }
-        Intent intent = new Intent(getContext(), DisplayAd.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        Intent intent = new Intent(getContext(), DisplayAd.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         Bundle bundle = new Bundle();
         bundle.putInt("ad_id", ad.getAdId());
         intent.putExtras(bundle);
@@ -424,6 +426,7 @@ public class SyncAdJob extends Job {
                                 AppDatabase.getInstance(getContext()).getCarouselAdItemDao().deleteTable();
                                 for (int c = 0; c < adRequested.getCarouselAdItems().size(); c++) {
                                     CarouselAdItem carouselAdItem = new CarouselAdItem();
+                                    carouselAdItem.setAdId(adRequested.getAdId());
                                     carouselAdItem.setTitle(adRequested.getCarouselAdItems().get(c).getTitle());
                                     carouselAdItem.setImage(adRequested.getCarouselAdItems().get(c).getImage());
                                     carouselAdItem.setDescription(adRequested.getCarouselAdItems().get(c).getDescription());

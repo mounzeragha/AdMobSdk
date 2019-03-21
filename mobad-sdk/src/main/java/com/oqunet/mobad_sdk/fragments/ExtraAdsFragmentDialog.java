@@ -1,5 +1,6 @@
 package com.oqunet.mobad_sdk.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +16,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -36,10 +41,9 @@ import com.oqunet.mobad_sdk.utils.ImageUtil;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 import com.oqunet.mobad_sdk.utils.ViewAnimation;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import hb.xvideoplayer.MxVideoPlayer;
-import hb.xvideoplayer.MxVideoPlayerWidget;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,7 +65,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     private Runnable runnable = null;
     private Handler handler = new Handler();
     MobAd mobAd;
-    MxVideoPlayerWidget videoView;
+    WebView videoView;
 
 
     public ExtraAdsFragmentDialog() {
@@ -192,14 +196,26 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         earnedCoinsMessage = dialog.findViewById(R.id.message);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
 
-        List<CarouselAdItem> carouselAdItems = AppDatabase.getInstance(getActivity()).getCarouselAdItemDao().loadCarouselItems();
+        List<CarouselAdItem> allCarouselAdItems = AppDatabase.getInstance(getActivity()).getCarouselAdItemDao().loadCarouselItems();
+        List<CarouselAdItem> carouselAdItems = new ArrayList<CarouselAdItem>();
+        for (CarouselAdItem carouselAdItem: allCarouselAdItems) {
+            if (carouselAdItem.getAdId() == ad.getAdId()) {
+                carouselAdItems.add(carouselAdItem);
+            } else {
+                break;
+            }
+        }
 
         RecyclerView carouselAdRecyclerView = dialog.findViewById(R.id.carousel_ad_recyclerView);
         LinearLayoutManager layoutManagerForCarouselAdRecyclerView = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
         carouselAdRecyclerView.setLayoutManager(layoutManagerForCarouselAdRecyclerView);
         carouselAdRecyclerView.setVisibility(View.VISIBLE);
 
-        adTitle.setText(ad.getAdTitle());
+        if (ad != null) {
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            advertiserName.setText(ad.getAdvertiserName());
+            adTitle.setText(ad.getAdTitle());
+        }
 
         CarouselAdItemsListAdapter carouselAdItemsListAdapter = new CarouselAdItemsListAdapter(getActivity());
         carouselAdItemsListAdapter.setCarouselAdItemsList(carouselAdItems);
@@ -207,9 +223,9 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         carouselAdItemsListAdapter.setOnItemClickListener(new CarouselAdItemsListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, CarouselAdItem carouselAdItem, int position) {
+                sendAdAction(Constants.KEY_CLICKED);
                 dismiss();
-                showingAdInterface.onShownAd();
-                MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
+                MobAdUtils.openWebUrlExternal(getActivity(), carouselAdItem.getButtonLink());
 
             }
 
@@ -219,6 +235,13 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
             @Override
             public void onClick(View view) {
                 dismiss();
+            }
+        });
+
+        earnedCoinsLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
             }
         });
     }
@@ -249,15 +272,33 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                     dismiss();
                 }
             });
+
+            earnedCoinsLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
+                }
+            });
         }
 
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void setVideoAdDataAndListeners() {
         if (ad != null) {
             ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
-            videoView.autoStartPlay("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath(),
-                    MxVideoPlayer.SCREEN_LAYOUT_NORMAL, ad.getAdTitle());
+            videoView.setWebChromeClient(new WebChromeClient());
+            videoView.setWebViewClient(new WebViewClient(){
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    return false;
+                }
+            });
+            WebSettings webSettings = videoView.getSettings();
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setMediaPlaybackRequiresUserGesture(false);
+            videoView.loadUrl("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
+
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
@@ -277,6 +318,13 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                 public void onClick(View view) {
                     dismiss();
 
+                }
+            });
+
+            earnedCoinsLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
                 }
             });
         }
@@ -305,6 +353,13 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                 public void onClick(View view) {
                     dismiss();
 
+                }
+            });
+
+            earnedCoinsLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
                 }
             });
         }
@@ -339,7 +394,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                                     ViewAnimation.showOut(earnedCoinsLayout);
                                 }
                             };
-                            handler.postDelayed(runnable, 3000);
+                            handler.postDelayed(runnable, 5000);
                         }
 
                     }

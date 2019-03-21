@@ -7,6 +7,10 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="congratulations_color">#fbdf3d</color>
+    <color name="cta_button_color">#D3215B</color>
+    <color name="cta_button_color_dark">#C1215B</color>
+    <color name="orange">#D3215B</color>
+    <color name="yellow">#FFC419</color>
 
     <color name="overlay_dark_10">#1A000000</color>
     <color name="overlay_dark_20">#33000000</color>

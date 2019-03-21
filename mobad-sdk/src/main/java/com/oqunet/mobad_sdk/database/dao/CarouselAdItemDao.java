@@ -30,6 +30,9 @@ public interface CarouselAdItemDao {
     @Query("select * from carouseladitem where title = :title")
     CarouselAdItem loadCarouselItem(String title);
 
+    @Query("select * from carouseladitem where ad_id = :adId")
+    CarouselAdItem loadCarouselItem(int adId);
+
     @Delete
     void deleteCarouselItem(CarouselAdItem... carouselItem);
 

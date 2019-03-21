@@ -7,10 +7,7 @@ public interface Constants {
     String SHARED_PREFS_NAME = PACKAGE + "_sharedPreferences";
     String KEY_VIEWED = "Viewed";
     String KEY_CLICKED = "Clicked";
-    String KEY_PLAYED = "Played";
-
-
-
-
+    String KEY_PLAYED_5SEC = "Played5Sec";
+    String KEY_PLAYED_ALL = "PlayedAll";
 
 }

@@ -72,4 +72,16 @@ public class CarouselAdItem {
     public void setButtonDestination(String buttonDestination) {
         this.buttonDestination = buttonDestination;
     }
+
+    @Override
+    public String toString() {
+        return "CarouselAdItem{" +
+                "title='" + title + '\'' +
+                ", image='" + image + '\'' +
+                ", description='" + description + '\'' +
+                ", buttonName='" + buttonName + '\'' +
+                ", buttonLink='" + buttonLink + '\'' +
+                ", buttonDestination='" + buttonDestination + '\'' +
+                '}';
+    }
 }
