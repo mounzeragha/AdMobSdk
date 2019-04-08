@@ -13,6 +13,9 @@ public class Ad {
     @SerializedName("AdvertiserImage")
     private String advertiserImage;
 
+    @SerializedName("AdPoster")
+    private String adPoster;
+
     @SerializedName("Layout")
     private String format;
 
@@ -50,6 +53,14 @@ public class Ad {
 
     public void setAdvertiserName(String advertiserName) {
         this.advertiserName = advertiserName;
+    }
+
+    public String getAdPoster() {
+        return adPoster;
+    }
+
+    public void setAdPoster(String adPoster) {
+        this.adPoster = adPoster;
     }
 
     public String getAdvertiserImage() {
@@ -137,6 +148,7 @@ public class Ad {
         return "Ad{" +
                 "advertiserName='" + advertiserName + '\'' +
                 ", advertiserImage='" + advertiserImage + '\'' +
+                ", adPoster='" + adPoster + '\'' +
                 ", format='" + format + '\'' +
                 ", adTitle='" + adTitle + '\'' +
                 ", adDescription='" + adDescription + '\'' +

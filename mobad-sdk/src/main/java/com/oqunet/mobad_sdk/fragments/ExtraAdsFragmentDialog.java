@@ -119,17 +119,21 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
             dialog.setContentView(R.layout.ad_image_layout);
             initializeImageAdViews(dialog);
             setImageAdDataAndListeners();
+            sendAdAction(Constants.KEY_VIEWED);
         } else if (ad.getFormat().equals("Video")) {
             dialog.setContentView(R.layout.ad_video_layout);
             initializeVideoAdViews(dialog);
             setVideoAdDataAndListeners();
+            sendAdAction(Constants.KEY_PLAYED_ALL);
         } else if (ad.getFormat().equals("Text")) {
             dialog.setContentView(R.layout.ad_text_layout);
             initializeTextAdViews(dialog);
             setTextAdDataAndListeners();
+            sendAdAction(Constants.KEY_VIEWED);
         } else if (ad.getFormat().equals("Carousel")) {
             dialog.setContentView(R.layout.ad_carousel_layout);
             initializeCarouselAdViews(dialog);
+            sendAdAction(Constants.KEY_VIEWED);
         }
 
         //    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -141,7 +145,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().setAttributes(layoutParams);
 
-        sendAdAction(Constants.KEY_VIEWED);
+
 
         return dialog;
     }
@@ -212,7 +216,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         carouselAdRecyclerView.setVisibility(View.VISIBLE);
 
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
         }
@@ -250,7 +254,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
 
     private void setImageAdDataAndListeners() {
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             ImageUtil.displayImage(adImage, "https://" + ad.getAdPath(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
@@ -286,7 +290,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     @SuppressLint("SetJavaScriptEnabled")
     private void setVideoAdDataAndListeners() {
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             videoView.setWebChromeClient(new WebChromeClient());
             videoView.setWebViewClient(new WebViewClient(){
                 @Override
@@ -333,7 +337,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
 
     private void setTextAdDataAndListeners() {
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());

@@ -19,6 +19,9 @@ public class ExtraAd implements Parcelable {
     @ColumnInfo(name = "advertiser_image")
     private String advertiserImage;
 
+    @ColumnInfo(name = "ad_poster")
+    private String adPoster;
+
     @ColumnInfo(name = "format")
     private String format;
 
@@ -52,6 +55,7 @@ public class ExtraAd implements Parcelable {
         this.id = in.readLong();
         this.advertiserName = in.readString();
         this.advertiserImage = in.readString();
+        this.adPoster = in.readString();
         this.format = in.readString();
         this.adTitle = in.readString();
         this.adDescription = in.readString();
@@ -84,6 +88,14 @@ public class ExtraAd implements Parcelable {
 
     public void setAdvertiserImage(String advertiserImage) {
         this.advertiserImage = advertiserImage;
+    }
+
+    public String getAdPoster() {
+        return adPoster;
+    }
+
+    public void setAdPoster(String adPoster) {
+        this.adPoster = adPoster;
     }
 
     public String getFormat() {
@@ -160,6 +172,7 @@ public class ExtraAd implements Parcelable {
         dest.writeLong(getId());
         dest.writeString(getAdvertiserName());
         dest.writeString(getAdvertiserImage());
+        dest.writeString(getAdPoster());
         dest.writeString(getFormat());
         dest.writeString(getAdTitle());
         dest.writeString(getAdDescription());

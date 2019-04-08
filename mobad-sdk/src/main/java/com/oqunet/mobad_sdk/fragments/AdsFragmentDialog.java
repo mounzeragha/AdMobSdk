@@ -65,7 +65,6 @@ public class AdsFragmentDialog extends DialogFragment {
     HandelErrors handelErrors;
     private Runnable runnable = null;
     private Handler handler = new Handler();
-    MobAd mobAd;
     WebView videoView;
     List<CarouselAdItem> carouselAdItems = new ArrayList<CarouselAdItem>();
 
@@ -98,8 +97,6 @@ public class AdsFragmentDialog extends DialogFragment {
         assert bundle != null;
         ad = bundle.getParcelable("ad");
 
-        mobAd = new MobAd(getActivity());
-        mobAd.registerPhoneCallsReceiver();
     }
 
 
@@ -122,17 +119,21 @@ public class AdsFragmentDialog extends DialogFragment {
                 dialog.setContentView(R.layout.ad_image_layout);
                 initializeImageAdViews(dialog);
                 setImageAdDataAndListeners();
+                sendAdAction(Constants.KEY_VIEWED);
             } else if (ad.getFormat().equals("Video")) {
                 dialog.setContentView(R.layout.ad_video_layout);
                 initializeVideoAdViews(dialog);
                 setVideoAdDataAndListeners();
+                sendAdAction(Constants.KEY_PLAYED_ALL);
             } else if (ad.getFormat().equals("Text")) {
                 dialog.setContentView(R.layout.ad_text_layout);
                 initializeTextAdViews(dialog);
                 setTextAdDataAndListeners();
+                sendAdAction(Constants.KEY_VIEWED);
             } else if (ad.getFormat().equals("Carousel")) {
                 dialog.setContentView(R.layout.ad_carousel_layout);
                 initializeCarouselAdViews(dialog);
+                sendAdAction(Constants.KEY_VIEWED);
             }
         }
 
@@ -144,8 +145,6 @@ public class AdsFragmentDialog extends DialogFragment {
         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
         layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
         dialog.getWindow().setAttributes(layoutParams);
-
-        sendAdAction(Constants.KEY_VIEWED);
 
         return dialog;
     }
@@ -211,7 +210,7 @@ public class AdsFragmentDialog extends DialogFragment {
         carouselAdRecyclerView.setVisibility(View.VISIBLE);
 
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
 
@@ -251,7 +250,7 @@ public class AdsFragmentDialog extends DialogFragment {
 
     private void setImageAdDataAndListeners() {
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             ImageUtil.displayImage(adImage, "https://" + ad.getAdPath(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
@@ -307,7 +306,7 @@ public class AdsFragmentDialog extends DialogFragment {
 
 
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
@@ -353,7 +352,7 @@ public class AdsFragmentDialog extends DialogFragment {
 
     private void setTextAdDataAndListeners() {
         if (ad != null) {
-            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdvertiserImage(), null);
+            ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
@@ -462,7 +461,6 @@ public class AdsFragmentDialog extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         AppDatabase.getInstance(getActivity()).getAdDao().deleteAd(ad);
-        mobAd.unregisterPhoneCallsReceiver();
         showingAdInterface.onShownAd();
         Log.i(LOG_TAG, "onDestroy: Delete Ad... Unregister Phone Calls Receiver... Finish Display Ad Activity...");
     }

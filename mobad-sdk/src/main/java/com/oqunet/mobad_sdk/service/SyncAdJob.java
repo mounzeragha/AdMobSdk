@@ -398,6 +398,7 @@ public class SyncAdJob extends Job {
                             final com.oqunet.mobad_sdk.database.entity.Ad ad = new com.oqunet.mobad_sdk.database.entity.Ad();
                             ad.setAdvertiserName(adRequested.getAdvertiserName());
                             ad.setAdvertiserImage(adRequested.getAdvertiserImage());
+                            ad.setAdPoster(adRequested.getAdPoster());
                             ad.setFormat(adRequested.getFormat());
                             ad.setAdTitle(adRequested.getAdTitle());
                             ad.setAdDescription(adRequested.getAdDescription());
@@ -411,6 +412,7 @@ public class SyncAdJob extends Job {
                             ExtraAd extraAd = new ExtraAd();
                             extraAd.setAdvertiserName(adRequested.getAdvertiserName());
                             extraAd.setAdvertiserImage(adRequested.getAdvertiserImage());
+                            extraAd.setAdPoster(adRequested.getAdPoster());
                             extraAd.setFormat(adRequested.getFormat());
                             extraAd.setAdTitle(adRequested.getAdTitle());
                             extraAd.setAdDescription(adRequested.getAdDescription());
@@ -462,7 +464,10 @@ public class SyncAdJob extends Job {
             @Override
             public void onFailure(Call<Ad> call, Throwable t) {
                 handelErrors.onFailureCall(call, t, LOG_TAG);
-                syncExtraAdJob();
+                if (MobAdUtils.isNetworkAvailable()) {
+                    syncExtraAdJob();
+                }
+
             }
 
         });
