@@ -462,7 +462,7 @@ public class AdsFragmentDialog extends DialogFragment {
         super.onDestroy();
         AppDatabase.getInstance(getActivity()).getAdDao().deleteAd(ad);
         showingAdInterface.onShownAd();
-        Log.i(LOG_TAG, "onDestroy: Delete Ad... Unregister Phone Calls Receiver... Finish Display Ad Activity...");
+        Log.i(LOG_TAG, "onDestroy: Delete Ad... Finish Display Ad Activity...");
     }
 
 

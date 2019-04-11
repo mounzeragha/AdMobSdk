@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         //request read phone state permission.
         if (mobAd.hasReadPhoneStatePermission()) {
             //You already have the permission, just go ahead.
-            mobAd.registerPhoneCallsReceiver();
+            mobAd.startMobAdService();
         } else {
             //request the permission.
             mobAd.requestReadPhoneStatePermission();
@@ -48,15 +48,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
             Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
-            mobAd.registerPhoneCallsReceiver();
+            mobAd.startMobAdService();
         }
 
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mobAd.unregisterPhoneCallsReceiver();
-    }
 }

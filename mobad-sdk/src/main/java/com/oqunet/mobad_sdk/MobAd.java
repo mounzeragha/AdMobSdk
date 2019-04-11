@@ -7,16 +7,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.oqunet.mobad_sdk.receiver.MyNotificationsHandler;
 import com.oqunet.mobad_sdk.receiver.PhoneStateReceiver;
+import com.oqunet.mobad_sdk.service.AdJobService;
+import com.oqunet.mobad_sdk.service.RegistrationIntentService;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 
 
 public class MobAd {
+    private static final String LOG_TAG = MobAd.class.getSimpleName();
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static PhoneStateReceiver phoneStateReceiver = new PhoneStateReceiver();
     private static final int READ_PHONE_STATE_PERMISSION_REQUEST_CODE = 10;
     private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1234;
@@ -28,20 +37,18 @@ public class MobAd {
         this.activity = activity;
     }
 
-    public void registerPhoneCallsReceiver() {
+    public void startMobAdService() {
 
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.intent.action.PHONE_STATE");
-        activity.registerReceiver(phoneStateReceiver, intentFilter);
-
-    }
-
-    public void unregisterPhoneCallsReceiver() {
-        try {
-            activity.unregisterReceiver(phoneStateReceiver);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(new Intent(activity, AdJobService.class));
         }
+        else {
+            activity.startService(new Intent(activity, AdJobService.class));
+        }
+
+        registerWithNotificationHubs();
+        MyNotificationsHandler.createChannelAndHandleNotifications(activity);
+
     }
 
     public boolean hasReadPhoneStatePermission() {
@@ -104,5 +111,40 @@ public class MobAd {
 
     public int getOverlayPermissionRequestCode() {
         return OVERLAY_PERMISSION_REQUEST_CODE;
+    }
+
+    private void registerWithNotificationHubs() {
+        Log.i(LOG_TAG, " Registering with Notification Hubs");
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                activity.startForegroundService(new Intent(activity, RegistrationIntentService.class));
+            }
+            else {
+                activity.startService(new Intent(activity, RegistrationIntentService.class));
+            }
+        }
+    }
+
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(activity);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(LOG_TAG, "This device is not supported by Google Play Services.");
+            }
+            return false;
+        }
+        return true;
     }
 }

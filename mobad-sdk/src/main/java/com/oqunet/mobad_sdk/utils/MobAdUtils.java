@@ -38,7 +38,7 @@ public class MobAdUtils {
     public static void startNewActivity(Context context, String packageName) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
         if (intent == null) {
-            // Bring user to the market or let them choose an app?
+            // Bring user to the play store to install the app.
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse("market://details?id=" + packageName));
         }

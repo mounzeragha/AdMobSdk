@@ -3,7 +3,6 @@ package com.oqunet.mobad_sdk.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -12,26 +11,17 @@ import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
 import com.oqunet.mobad_sdk.models.Job;
 import com.oqunet.mobad_sdk.service.AdJobCreator;
-import com.oqunet.mobad_sdk.service.AdJobService;
 import com.oqunet.mobad_sdk.service.SyncAdJob;
 
 
-public class PhoneStateReceiver extends BroadcastReceiver {
-    private static final String LOG_TAG = PhoneStateReceiver.class.getSimpleName();
+public class PhoneCallReceiver extends BroadcastReceiver {
+    private static final String LOG_TAG = PhoneCallReceiver.class.getSimpleName();
     int jobId;
-
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(new Intent(context, AdJobService.class));
-        }
-        else {
-            context.startService(new Intent(context, AdJobService.class));
-        }
-
-        /**
+        Log.i("PHONE CALL RECEIVER :  ","IS UP AGAIN....");
 
         try {
             Log.i(LOG_TAG, "Receiver start");
@@ -54,9 +44,6 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-         */
-
     }
 
     private class PhoneStateChangeListener extends PhoneStateListener {
@@ -110,7 +97,4 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         Job.setJobId(jobId);
         Log.i("NEW JOB ID: ", String.valueOf(jobId));
     }
-
 }
-
-

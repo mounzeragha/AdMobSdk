@@ -64,7 +64,6 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     HandelErrors handelErrors;
     private Runnable runnable = null;
     private Handler handler = new Handler();
-    MobAd mobAd;
     WebView videoView;
 
 
@@ -96,8 +95,6 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         assert bundle != null;
         ad = bundle.getParcelable("extra_ad");
 
-        mobAd = new MobAd(getActivity());
-        mobAd.registerPhoneCallsReceiver();
     }
 
 
@@ -445,9 +442,8 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mobAd.unregisterPhoneCallsReceiver();
         showingAdInterface.onShownAd();
-        Log.i(LOG_TAG, "onDestroy: Unregister Phone Calls Receiver... Finish Display ExtraAd Activity...");
+        Log.i(LOG_TAG, "onDestroy: Finish Display ExtraAd Activity...");
     }
 
 }
