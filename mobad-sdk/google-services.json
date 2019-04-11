@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "386732088732",
+    "firebase_url": "https://mobadsdk-oqunet.firebaseio.com",
+    "project_id": "mobadsdk-oqunet",
+    "storage_bucket": "mobadsdk-oqunet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:386732088732:android:2dc971a43f9885b1",
+        "android_client_info": {
+          "package_name": "com.oqunet.mobad_sdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "386732088732-tlnvchfpnimnqbnfgmhrnh6kreltl2lh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZmi9mklQAHZL_obNNIT70wmTTV1cOPDI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "386732088732-tlnvchfpnimnqbnfgmhrnh6kreltl2lh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
