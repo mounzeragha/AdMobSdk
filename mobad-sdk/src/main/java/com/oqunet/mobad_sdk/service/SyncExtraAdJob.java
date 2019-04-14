@@ -98,7 +98,7 @@ public class SyncExtraAdJob extends Job {
         adHeadImage = (ImageView) adHeadView.findViewById(R.id.ad_head_img);
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getContext()).build();
         com.nostra13.universalimageloader.core.ImageLoader.getInstance().init(config);
-        ImageUtil.displayRoundImage(adHeadImage, "https://" + ad.getAdvertiserImage(), null);
+        ImageUtil.displayRoundImage(adHeadImage, "https://" + ad.getAdPoster(), null);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             windowManager.getDefaultDisplay().getSize(szWindow);

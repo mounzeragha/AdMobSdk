@@ -18,6 +18,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.oqunet.mobad_sdk.receiver.MyNotificationsHandler;
 import com.oqunet.mobad_sdk.receiver.PhoneStateReceiver;
+import com.oqunet.mobad_sdk.service.AdJobIntentService;
 import com.oqunet.mobad_sdk.service.AdJobService;
 import com.oqunet.mobad_sdk.service.RegistrationIntentService;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
@@ -40,11 +41,12 @@ public class MobAd {
     public void startMobAdService() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity.startForegroundService(new Intent(activity, AdJobService.class));
+            AdJobIntentService.enqueueWork(activity, new Intent());
         }
         else {
             activity.startService(new Intent(activity, AdJobService.class));
         }
+
 
         registerWithNotificationHubs();
         MyNotificationsHandler.createChannelAndHandleNotifications(activity);
@@ -117,13 +119,8 @@ public class MobAd {
         Log.i(LOG_TAG, " Registering with Notification Hubs");
 
         if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                activity.startForegroundService(new Intent(activity, RegistrationIntentService.class));
-            }
-            else {
-                activity.startService(new Intent(activity, RegistrationIntentService.class));
-            }
+            activity.startService(new Intent(activity, RegistrationIntentService.class));
+
         }
     }
 

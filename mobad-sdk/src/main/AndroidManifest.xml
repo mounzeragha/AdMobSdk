@@ -78,6 +78,9 @@
             android:exported="false">
         </service>
 
+        <service android:name=".service.AdJobIntentService"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
         <receiver android:name="com.microsoft.windowsazure.notifications.NotificationsBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>

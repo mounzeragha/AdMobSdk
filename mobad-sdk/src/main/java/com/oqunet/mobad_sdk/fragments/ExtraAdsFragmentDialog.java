@@ -3,6 +3,7 @@ package com.oqunet.mobad_sdk.fragments;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -16,20 +17,16 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
-import com.oqunet.mobad_sdk.MobAd;
 import com.oqunet.mobad_sdk.R;
 import com.oqunet.mobad_sdk.adapters.CarouselAdItemsListAdapter;
 import com.oqunet.mobad_sdk.database.AppDatabase;
-import com.oqunet.mobad_sdk.database.entity.Ad;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 import com.oqunet.mobad_sdk.database.entity.ExtraAd;
 import com.oqunet.mobad_sdk.retrofit.ApiClient;
@@ -43,6 +40,8 @@ import com.oqunet.mobad_sdk.utils.ViewAnimation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,7 +63,13 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     HandelErrors handelErrors;
     private Runnable runnable = null;
     private Handler handler = new Handler();
-    WebView videoView;
+    private VideoView videoView;
+    boolean playedAll = false;
+    private int mCurrentPosition = 0;
+    int seconds = 6;
+    int timeCounter;
+    Timer videoTimer;
+
 
 
     public ExtraAdsFragmentDialog() {
@@ -121,7 +126,6 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
             dialog.setContentView(R.layout.ad_video_layout);
             initializeVideoAdViews(dialog);
             setVideoAdDataAndListeners();
-            sendAdAction(Constants.KEY_PLAYED_ALL);
         } else if (ad.getFormat().equals("Text")) {
             dialog.setContentView(R.layout.ad_text_layout);
             initializeTextAdViews(dialog);
@@ -288,17 +292,45 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     private void setVideoAdDataAndListeners() {
         if (ad != null) {
             ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
-            videoView.setWebChromeClient(new WebChromeClient());
-            videoView.setWebViewClient(new WebViewClient(){
+            // Current playback position (in milliseconds).
+            // Set up the media controller widget and attach it to the video view.
+            MediaController controller = new MediaController(getActivity());
+            controller.setMediaPlayer(videoView);
+            videoView.setMediaController(controller);
+
+            videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
+            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                public void onPrepared(MediaPlayer mp) {
+                    mp.setLooping(false);
+                    Log.i(LOG_TAG, "Duration = " + videoView.getDuration());
+                }
+            });
+            videoView.setOnCompletionListener(
+                    new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            Log.i(LOG_TAG, "Video Completed: " + String.valueOf(mediaPlayer.getCurrentPosition()));
+                            playedAll = true;
+                            Log.i(LOG_TAG, "PLAYED ALL");
+                            sendAdAction(Constants.KEY_PLAYED_ALL);
+
+                        }
+                    });
+            videoView.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
+                    if (i == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START){
+                        Log.i(LOG_TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
+                        setVideoTimer();
+                        return true;
+                    }
                     return false;
                 }
             });
-            WebSettings webSettings = videoView.getSettings();
-            webSettings.setJavaScriptEnabled(true);
-            webSettings.setMediaPlaybackRequiresUserGesture(false);
-            videoView.loadUrl("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
+
+            videoView.seekTo(1);
+            videoView.start();
 
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
@@ -444,6 +476,45 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         super.onDestroy();
         showingAdInterface.onShownAd();
         Log.i(LOG_TAG, "onDestroy: Finish Display ExtraAd Activity...");
+        if(videoView != null) {
+            videoView.stopPlayback();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(videoView != null) {
+            if (mCurrentPosition == 5) {
+                if (!playedAll) {
+                    Log.i(LOG_TAG, "PLAYED 5 SEC");
+                    sendAdAction(Constants.KEY_PLAYED_5SEC);
+                }
+            } else {
+                videoTimer.cancel();
+            }
+
+        }
+    }
+
+    public void setVideoTimer() {
+        videoTimer = new Timer();
+        videoTimer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (timeCounter == seconds) {
+                            videoTimer.cancel();
+                            return;
+                        }
+
+                        mCurrentPosition = timeCounter;
+                        Log.i(LOG_TAG, "Current Position: " + String.valueOf(mCurrentPosition));
+                        timeCounter++;
+                    }
+                });
+            }
+        }, 0, 1000);
     }
 
 }

@@ -66,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:background="@drawable/selector_button_grey"
+                android:background="@drawable/selector_button_grey_for_caroucel"
                 android:padding="4dp"
                 android:text="Learn More"
                 android:textSize="8sp"

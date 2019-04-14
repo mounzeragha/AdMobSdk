@@ -15,12 +15,7 @@ public class MyInstanceID extends FirebaseInstanceIdService {
         super.onTokenRefresh();
 
         Log.d(TAG, "Refreshing FCM Registration Token");
+        startService(new Intent(this, RegistrationIntentService.class));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(new Intent(this, RegistrationIntentService.class));
-        }
-        else {
-            startService(new Intent(this, RegistrationIntentService.class));
-        }
     }
 }

@@ -1,24 +1,32 @@
 package com.oqunet.mobad_sdk.service;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
-import android.os.Build;
-import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.util.Log;
 
 import com.oqunet.mobad_sdk.receiver.PhoneCallReceiver;
 
-public class AdJobService extends Service {
-    private static final String LOG_TAG = AdJobService.class.getSimpleName();
+public class AdJobIntentService extends JobIntentService {
+    private static final String LOG_TAG = AdJobIntentService.class.getSimpleName();
     private PhoneCallReceiver phoneCallReceiver = new PhoneCallReceiver();
+    /**
+     * Unique job ID for this service.
+     */
+    static final int JOB_ID = 1000;
 
+    /**
+     * Convenience method for enqueuing work in to this service.
+     */
+    public static void enqueueWork(Context context, Intent work) {
+        enqueueWork(context, AdJobIntentService.class, JOB_ID, work);
+    }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    protected void onHandleWork(@NonNull Intent intent) {
+
         Log.i(LOG_TAG, "OnCreate AdJobService");
 
         IntentFilter intentFilter = new IntentFilter();
@@ -29,12 +37,6 @@ public class AdJobService extends Service {
 
         Log.i(LOG_TAG, "PhoneCallReceiver Created....");
 
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_NOT_STICKY;
     }
 
     @Override
@@ -42,13 +44,4 @@ public class AdJobService extends Service {
         this.unregisterReceiver(phoneCallReceiver);
         Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
     }
-
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-
 }
