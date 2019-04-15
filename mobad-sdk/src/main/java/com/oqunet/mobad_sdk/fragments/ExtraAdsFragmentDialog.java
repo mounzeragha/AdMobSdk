@@ -295,8 +295,8 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
             // Current playback position (in milliseconds).
             // Set up the media controller widget and attach it to the video view.
             MediaController controller = new MediaController(getActivity());
-            controller.setMediaPlayer(videoView);
-            videoView.setMediaController(controller);
+        //    controller.setMediaPlayer(videoView);
+        //    videoView.setMediaController(controller);
 
             videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -491,7 +491,9 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                     sendAdAction(Constants.KEY_PLAYED_5SEC);
                 }
             } else {
-                videoTimer.cancel();
+                if (videoTimer != null) {
+                    videoTimer.cancel();
+                }
             }
 
         }

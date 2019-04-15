@@ -20,6 +20,8 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -56,6 +58,7 @@ public class AdsFragmentDialog extends DialogFragment {
     TextView ctaButton;
     ImageButton closeButton;
     CardView earnedCoinsLayout;
+    ProgressBar progressBarForVideo;
     Ad ad;
     ShowingAdInterface showingAdInterface;
     ApiService apiService;
@@ -70,6 +73,7 @@ public class AdsFragmentDialog extends DialogFragment {
     int seconds = 6;
     int timeCounter;
     Timer videoTimer;
+    MediaController controller;
 
 
     public AdsFragmentDialog() {
@@ -175,7 +179,9 @@ public class AdsFragmentDialog extends DialogFragment {
         closeButton = dialog.findViewById(R.id.bt_close);
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
+        progressBarForVideo = dialog.findViewById(R.id.progress_bar);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
+        progressBarForVideo.setVisibility(View.VISIBLE);
     }
 
     private void initializeTextAdViews(Dialog dialog) {
@@ -287,37 +293,15 @@ public class AdsFragmentDialog extends DialogFragment {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void setVideoAdDataAndListeners() {
-        /**
-         videoView.setWebChromeClient(new WebChromeClient());
-         videoView.setWebViewClient(new WebViewClient(){
-        @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        return false;
-        }
-        });
-         WebSettings webSettings = videoView.getSettings();
-         webSettings.setJavaScriptEnabled(true);
-         webSettings.setMediaPlaybackRequiresUserGesture(false);
-         webSettings.setAllowFileAccess(true);
-         webSettings.setPluginState(WebSettings.PluginState.ON_DEMAND);
-         webSettings.setDomStorageEnabled(true);
-         videoView.loadUrl("https://admob.azurewebsites.net/content/ad_videos/LTAMTfLuF6kHg71jF39P_Persil.mp4");
-         Log.i(LOG_TAG, "VIDEO PROGRESS: " + String.valueOf(videoView.getProgress()));
-         //    String frameVideo = "<html><body>Video From YouTube<br><iframe width=\"420\" height=\"315\" src=\"https://admob.azurewebsites.net/content/ad_videos/LTAMTfLuF6kHg71jF39P_Persil.mp4\" frameborder=\"0\" allowfullscreen></iframe></body></html>";
-         //    videoView.loadData(frameVideo, "text/html", "utf-8");
-         */
-
-
         if (ad != null) {
             ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
             advertiserName.setText(ad.getAdvertiserName());
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
 
-            // Current playback position (in milliseconds).
             // Set up the media controller widget and attach it to the video view.
-            MediaController controller = new MediaController(getActivity());
-            controller.setMediaPlayer(videoView);
-            videoView.setMediaController(controller);
+            controller = new MediaController(getActivity());
+
 
             videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -325,7 +309,19 @@ public class AdsFragmentDialog extends DialogFragment {
                 public void onPrepared(MediaPlayer mp) {
                     mp.setLooping(false);
                     Log.i(LOG_TAG, "Duration = " + videoView.getDuration());
+
+                    mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                        @Override
+                        public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                        //    controller.setAnchorView(videoView);
+                        //    videoView.setMediaController(controller);
+                        }
+                    });
+
                 }
+
+
+
             });
             videoView.setOnCompletionListener(
                     new MediaPlayer.OnCompletionListener() {
@@ -341,6 +337,7 @@ public class AdsFragmentDialog extends DialogFragment {
                 public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
                     if (i == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START){
                         Log.i(LOG_TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
+                        progressBarForVideo.setVisibility(View.GONE);
                         setVideoTimer();
                         return true;
                     }
@@ -350,26 +347,7 @@ public class AdsFragmentDialog extends DialogFragment {
 
             videoView.seekTo(1);
             videoView.start();
-            /**
-             videoView.setWebChromeClient(new WebChromeClient());
-             videoView.setWebViewClient(new WebViewClient() {
-            @Override public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            Log.i("WebView", "onPageStarted " + url);
-            }
 
-            @Override public void onPageFinished(WebView view, String url) {
-            Log.i("WebView", "onPageFinished " + url);
-            startTimer();
-            }
-
-
-            });
-
-             WebSettings webSettings = videoView.getSettings();
-             webSettings.setJavaScriptEnabled(true);
-             webSettings.setMediaPlaybackRequiresUserGesture(false);
-             videoView.loadUrl("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
-             */
             ctaButton.setText(ad.getButtonName());
             ctaButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -529,7 +507,10 @@ public class AdsFragmentDialog extends DialogFragment {
                     sendAdAction(Constants.KEY_PLAYED_5SEC);
                 }
             } else {
-                videoTimer.cancel();
+                if (videoTimer != null) {
+                    videoTimer.cancel();
+                }
+
             }
 
         }
