@@ -4,10 +4,8 @@ package com.oqunet.mobad_sdk;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,10 +16,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.oqunet.mobad_sdk.receiver.MyNotificationsHandler;
 import com.oqunet.mobad_sdk.receiver.PhoneStateReceiver;
-import com.oqunet.mobad_sdk.service.AdJobIntentService;
-import com.oqunet.mobad_sdk.service.AdJobService;
 import com.oqunet.mobad_sdk.service.RegistrationIntentService;
+import com.oqunet.mobad_sdk.service.SyncAdWork;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
+
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 
 public class MobAd {
@@ -40,13 +42,22 @@ public class MobAd {
 
     public void startMobAdService() {
 
+        /**
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AdJobIntentService.enqueueWork(activity, new Intent());
         }
         else {
             activity.startService(new Intent(activity, AdJobService.class));
         }
+        */
 
+        Constraints myConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+        OneTimeWorkRequest adWorkRequest = new OneTimeWorkRequest.Builder(SyncAdWork.class)
+        //        .setConstraints(myConstraints)
+                .build();
+        WorkManager.getInstance().enqueue(adWorkRequest);
 
         registerWithNotificationHubs();
         MyNotificationsHandler.createChannelAndHandleNotifications(activity);
