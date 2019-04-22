@@ -15,11 +15,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -56,6 +59,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     TextView ctaButton;
     ImageButton closeButton;
     CardView earnedCoinsLayout;
+    ProgressBar progressBarForVideo;
     ExtraAd ad;
     ShowingAdInterface showingAdInterface;
     ApiService apiService;
@@ -69,6 +73,8 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     int seconds = 6;
     int timeCounter;
     Timer videoTimer;
+    MediaController controller;
+    FrameLayout mediaControllerLayout;
 
 
 
@@ -176,7 +182,10 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
         closeButton = dialog.findViewById(R.id.bt_close);
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
+        mediaControllerLayout = dialog.findViewById(R.id.media_controller_layout);
+        progressBarForVideo = dialog.findViewById(R.id.progress_bar);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
+        progressBarForVideo.setVisibility(View.VISIBLE);
     }
 
     private void initializeTextAdViews(Dialog dialog) {
@@ -292,11 +301,6 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
     private void setVideoAdDataAndListeners() {
         if (ad != null) {
             ImageUtil.displayRoundImage(advertiserBrandIcon, "https://" + ad.getAdPoster(), null);
-            // Current playback position (in milliseconds).
-            // Set up the media controller widget and attach it to the video view.
-            MediaController controller = new MediaController(getActivity());
-        //    controller.setMediaPlayer(videoView);
-        //    videoView.setMediaController(controller);
 
             videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -304,6 +308,22 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                 public void onPrepared(MediaPlayer mp) {
                     mp.setLooping(false);
                     Log.i(LOG_TAG, "Duration = " + videoView.getDuration());
+
+                    mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                        @Override
+                        public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+
+                            // Set up the media controller widget and attach it to the video view.
+                            controller = new MediaController(getActivity());
+                            videoView.setMediaController(controller);
+                            controller.setAnchorView(videoView);
+                            ((ViewGroup) controller.getParent()).removeView(controller);
+                            mediaControllerLayout.addView(controller);
+                            mediaControllerLayout.setVisibility(View.VISIBLE);
+                            controller.setEnabled(false);
+
+                        }
+                    });
                 }
             });
             videoView.setOnCompletionListener(
@@ -311,6 +331,8 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
                             Log.i(LOG_TAG, "Video Completed: " + String.valueOf(mediaPlayer.getCurrentPosition()));
+                            progressBarForVideo.setVisibility(View.GONE);
+                            mediaControllerLayout.setVisibility(View.GONE);
                             playedAll = true;
                             Log.i(LOG_TAG, "PLAYED ALL");
                             sendAdAction(Constants.KEY_PLAYED_ALL);
@@ -322,6 +344,7 @@ public class ExtraAdsFragmentDialog extends DialogFragment {
                 public boolean onInfo(MediaPlayer mediaPlayer, int i, int i1) {
                     if (i == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START){
                         Log.i(LOG_TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
+                        progressBarForVideo.setVisibility(View.GONE);
                         setVideoTimer();
                         return true;
                     }

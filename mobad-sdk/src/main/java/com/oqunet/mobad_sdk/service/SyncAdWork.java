@@ -34,5 +34,13 @@ public class SyncAdWork extends Worker {
         return Result.success();
     }
 
+    /**
+    @Override
+    public void onStopped() {
+        super.onStopped();
+        getApplicationContext().unregisterReceiver(phoneCallReceiver);
+        Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
+    }
+    */
 
 }

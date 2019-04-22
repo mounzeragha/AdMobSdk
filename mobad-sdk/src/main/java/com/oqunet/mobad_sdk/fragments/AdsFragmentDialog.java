@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,8 +16,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -44,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -74,6 +78,9 @@ public class AdsFragmentDialog extends DialogFragment {
     int timeCounter;
     Timer videoTimer;
     MediaController controller;
+    TextView videoDuration;
+    private static CountDownTimer countDownTimer;
+    FrameLayout mediaControllerLayout;
 
 
     public AdsFragmentDialog() {
@@ -180,8 +187,11 @@ public class AdsFragmentDialog extends DialogFragment {
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
         progressBarForVideo = dialog.findViewById(R.id.progress_bar);
+        videoDuration = dialog.findViewById(R.id.duration);
+        mediaControllerLayout = dialog.findViewById(R.id.media_controller_layout);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
         progressBarForVideo.setVisibility(View.VISIBLE);
+        videoDuration.setVisibility(View.INVISIBLE);
     }
 
     private void initializeTextAdViews(Dialog dialog) {
@@ -299,10 +309,6 @@ public class AdsFragmentDialog extends DialogFragment {
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
 
-            // Set up the media controller widget and attach it to the video view.
-            controller = new MediaController(getActivity());
-
-
             videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
@@ -313,14 +319,20 @@ public class AdsFragmentDialog extends DialogFragment {
                     mp.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
                         @Override
                         public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-                        //    controller.setAnchorView(videoView);
-                        //    videoView.setMediaController(controller);
+
+                            // Set up the media controller widget and attach it to the video view.
+                            controller = new MediaController(getActivity());
+                            videoView.setMediaController(controller);
+                            controller.setAnchorView(videoView);
+                            ((ViewGroup) controller.getParent()).removeView(controller);
+                            mediaControllerLayout.addView(controller);
+                            mediaControllerLayout.setVisibility(View.VISIBLE);
+                            controller.setEnabled(false);
+
                         }
                     });
 
                 }
-
-
 
             });
             videoView.setOnCompletionListener(
@@ -328,6 +340,8 @@ public class AdsFragmentDialog extends DialogFragment {
                         @Override
                         public void onCompletion(MediaPlayer mediaPlayer) {
                             Log.i(LOG_TAG, "Video Completed: " + String.valueOf(mediaPlayer.getCurrentPosition()));
+                            progressBarForVideo.setVisibility(View.GONE);
+                            mediaControllerLayout.setVisibility(View.GONE);
                             playedAll = true;
                             sendAdAction(Constants.KEY_PLAYED_ALL);
                         }
@@ -338,6 +352,8 @@ public class AdsFragmentDialog extends DialogFragment {
                     if (i == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START){
                         Log.i(LOG_TAG, "MEDIA_INFO_VIDEO_RENDERING_START");
                         progressBarForVideo.setVisibility(View.GONE);
+                    //    videoDuration.setVisibility(View.VISIBLE);
+                    //    setVideoDuration(videoView.getDuration());
                         setVideoTimer();
                         return true;
                     }
@@ -534,6 +550,25 @@ public class AdsFragmentDialog extends DialogFragment {
                 });
             }
         }, 0, 1000);
+    }
+
+    private void setVideoDuration(final int noOfSeconds) {
+        countDownTimer = new CountDownTimer(noOfSeconds, 1000) {
+            public void onTick(long millisUntilFinished) {
+                long millis = millisUntilFinished;
+                //Convert milliseconds into hour,minute and seconds
+                String time = String.format("%02d", TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+                videoDuration.setText(time);
+                if (videoDuration.getText().equals("01")) {
+                    videoDuration.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            public void onFinish() {
+                videoDuration.setVisibility(View.INVISIBLE);
+            }
+        }.start();
+
     }
 
 

@@ -20,9 +20,12 @@ import com.oqunet.mobad_sdk.service.RegistrationIntentService;
 import com.oqunet.mobad_sdk.service.SyncAdWork;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 
+import java.util.concurrent.TimeUnit;
+
 import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 
@@ -33,7 +36,6 @@ public class MobAd {
     private static final int READ_PHONE_STATE_PERMISSION_REQUEST_CODE = 10;
     private static final int OVERLAY_PERMISSION_REQUEST_CODE = 1234;
     private final Activity activity;
-
 
 
     public MobAd(Activity activity) {
@@ -54,10 +56,18 @@ public class MobAd {
         Constraints myConstraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
+        PeriodicWorkRequest.Builder adWorkRequest =
+                new PeriodicWorkRequest.Builder(SyncAdWork.class, 15, TimeUnit.MINUTES)
+                        .setConstraints(myConstraints);
+        PeriodicWorkRequest adWork = adWorkRequest.build();
+        WorkManager.getInstance().enqueue(adWork);
+
+        /**
         OneTimeWorkRequest adWorkRequest = new OneTimeWorkRequest.Builder(SyncAdWork.class)
-        //        .setConstraints(myConstraints)
+                .setConstraints(myConstraints)
                 .build();
         WorkManager.getInstance().enqueue(adWorkRequest);
+         */
 
         registerWithNotificationHubs();
         MyNotificationsHandler.createChannelAndHandleNotifications(activity);
