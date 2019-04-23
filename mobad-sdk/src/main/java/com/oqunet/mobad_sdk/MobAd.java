@@ -3,10 +3,16 @@ package com.oqunet.mobad_sdk;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -15,18 +21,24 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.oqunet.mobad_sdk.receiver.MyNotificationsHandler;
+import com.oqunet.mobad_sdk.receiver.PhoneCallReceiver;
 import com.oqunet.mobad_sdk.receiver.PhoneStateReceiver;
+import com.oqunet.mobad_sdk.service.AdJobIntentService;
+import com.oqunet.mobad_sdk.service.AdJobService;
 import com.oqunet.mobad_sdk.service.RegistrationIntentService;
 import com.oqunet.mobad_sdk.service.SyncAdWork;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+
+import static android.content.Context.POWER_SERVICE;
 
 
 public class MobAd {
@@ -44,35 +56,51 @@ public class MobAd {
 
     public void startMobAdService() {
 
+
         /**
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AdJobIntentService.enqueueWork(activity, new Intent());
-        }
-        else {
+        } else {
             activity.startService(new Intent(activity, AdJobService.class));
         }
-        */
+         */
+
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Intent intent = new Intent();
+            String packageName = activity.getPackageName();
+            PowerManager pm = (PowerManager) activity.getSystemService(POWER_SERVICE);
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+                activity.startActivity(intent);
+            }
+        }
+
 
         Constraints myConstraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
         PeriodicWorkRequest.Builder adWorkRequest =
                 new PeriodicWorkRequest.Builder(SyncAdWork.class, 15, TimeUnit.MINUTES)
+                        .addTag("periodic-work-request")
                         .setConstraints(myConstraints);
         PeriodicWorkRequest adWork = adWorkRequest.build();
-        WorkManager.getInstance().enqueue(adWork);
+        WorkManager.getInstance().enqueueUniquePeriodicWork("periodic-work-request", ExistingPeriodicWorkPolicy.KEEP, adWork);
+
 
         /**
-        OneTimeWorkRequest adWorkRequest = new OneTimeWorkRequest.Builder(SyncAdWork.class)
-                .setConstraints(myConstraints)
-                .build();
-        WorkManager.getInstance().enqueue(adWorkRequest);
+         OneTimeWorkRequest adWorkRequest = new OneTimeWorkRequest.Builder(SyncAdWork.class)
+         .setConstraints(myConstraints)
+         .build();
+         WorkManager.getInstance().enqueue(adWorkRequest);
          */
 
         registerWithNotificationHubs();
         MyNotificationsHandler.createChannelAndHandleNotifications(activity);
 
     }
+
 
     public boolean hasReadPhoneStatePermission() {
         int permissionCheckResult = ContextCompat.checkSelfPermission(
@@ -112,14 +140,14 @@ public class MobAd {
         return false;
     }
 
-    private void requestPermission(int requestCode){
+    private void requestPermission(int requestCode) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         intent.setData(Uri.parse("package:" + activity.getPackageName()));
         activity.startActivityForResult(intent, requestCode);
     }
 
     public void requestDrawOverAppsPermission() {
-        if(!MobAdUtils.canDrawOverlays(activity)) {
+        if (!MobAdUtils.canDrawOverlays(activity)) {
             requestPermission(OVERLAY_PERMISSION_REQUEST_CODE);
         }
     }

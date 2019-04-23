@@ -7,12 +7,13 @@ import android.util.Log;
 
 import com.oqunet.mobad_sdk.receiver.PhoneCallReceiver;
 
+import androidx.work.ListenableWorker;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
 public class SyncAdWork extends Worker {
     private static final String LOG_TAG = SyncAdWork.class.getSimpleName();
-    private PhoneCallReceiver phoneCallReceiver = new PhoneCallReceiver();
+    private PhoneCallReceiver phoneCallReceiver;
 
     public SyncAdWork(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -20,9 +21,10 @@ public class SyncAdWork extends Worker {
 
     @NonNull
     @Override
-    public Result doWork() {
+    public ListenableWorker.Result doWork() {
         Log.i(LOG_TAG, "OnCreate SyncAdWork");
 
+        phoneCallReceiver = new PhoneCallReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("android.intent.action.BOOT_COMPLETED");
         intentFilter.addAction("android.intent.action.QUICKBOOT_POWERON");
@@ -34,13 +36,13 @@ public class SyncAdWork extends Worker {
         return Result.success();
     }
 
-    /**
+
     @Override
     public void onStopped() {
         super.onStopped();
         getApplicationContext().unregisterReceiver(phoneCallReceiver);
         Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
     }
-    */
+
 
 }
