@@ -43,6 +43,9 @@ public class Ad {
     @SerializedName("CarouselItems")
     private List<CarouselAdItem> carouselAdItems;
 
+    @SerializedName("IsInvasive")
+    private boolean isInvasive;
+
     public Ad() {
         carouselAdItems = new ArrayList<>();
     }
@@ -143,6 +146,14 @@ public class Ad {
         this.carouselAdItems = carouselAdItems;
     }
 
+    public boolean isInvasive() {
+        return isInvasive;
+    }
+
+    public void setInvasive(boolean invasive) {
+        isInvasive = invasive;
+    }
+
     @Override
     public String toString() {
         return "Ad{" +
@@ -158,6 +169,7 @@ public class Ad {
                 ", buttonLink='" + buttonLink + '\'' +
                 ", buttonDestination='" + buttonDestination + '\'' +
                 ", carouselAdItems=" + carouselAdItems +
+                ", isInvasive=" + isInvasive +
                 '}';
     }
 }

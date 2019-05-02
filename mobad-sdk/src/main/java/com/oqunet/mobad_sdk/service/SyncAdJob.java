@@ -28,11 +28,11 @@ import com.oqunet.mobad_sdk.R;
 import com.oqunet.mobad_sdk.database.AppDatabase;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 import com.oqunet.mobad_sdk.database.entity.ExtraAd;
-import com.oqunet.mobad_sdk.fragments.AdsFragmentDialog;
 import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
 import com.oqunet.mobad_sdk.retrofit.HandelErrors;
 import com.oqunet.mobad_sdk.retrofit.entity.Ad;
+import com.oqunet.mobad_sdk.retrofit.entity.AdServiceStatus;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 import com.oqunet.mobad_sdk.utils.ImageUtil;
 import com.oqunet.mobad_sdk.utils.ViewAnimation;
@@ -59,18 +59,21 @@ public class SyncAdJob extends Job {
     ApiClient apiClient;
     ApiService apiService;
     Call<Ad> adCall;
+    Call<AdServiceStatus> adServiceStatusCall;
     HandelErrors handelErrors;
 
     @NonNull
     @Override
     protected Result onRunJob(@NonNull Params params) {
         Log.e(LOG_TAG, "onRunJob");
-        getAd();
+        apiService = ApiClient.getClient().create(ApiService.class);
+        handelErrors = new HandelErrors(getContext());
+        checkAdServiceStatus();
         return Result.SUCCESS;
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private void startDisplayAd(final com.oqunet.mobad_sdk.database.entity.Ad ad) {
+    private void displayAd(final com.oqunet.mobad_sdk.database.entity.Ad ad) {
         int LAYOUT_FLAG;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
@@ -245,7 +248,7 @@ public class SyncAdJob extends Job {
                         if(Math.abs(x_diff) < 5 && Math.abs(y_diff) < 5){
                             time_end = System.currentTimeMillis();
                             if((time_end - time_start) < 300){
-                                adHeadClick(ad);
+                                openAd(ad);
                             }
                         }
 
@@ -337,7 +340,7 @@ public class SyncAdJob extends Job {
         return statusBarHeight;
     }
 
-    private void adHeadClick(com.oqunet.mobad_sdk.database.entity.Ad ad){
+    private void openAd(com.oqunet.mobad_sdk.database.entity.Ad ad){
         if(adHeadView != null){
             windowManager.removeView(adHeadView);
         }
@@ -377,12 +380,8 @@ public class SyncAdJob extends Job {
     }
 
     private void getAd() {
-
-        apiService = ApiClient.getClient().create(ApiService.class);
-        handelErrors = new HandelErrors(getContext());
         String deviceId = MobAdUtils.getDeviceID(getContext());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
-
         adCall = apiService.getAd(deviceId);
         adCall.enqueue(new Callback<Ad>() {
             @Override
@@ -407,6 +406,7 @@ public class SyncAdJob extends Job {
                             ad.setButtonName(adRequested.getButtonName());
                             ad.setButtonLink(adRequested.getButtonLink());
                             ad.setButtonDestination(adRequested.getButtonDestination());
+                            ad.setInvasive(adRequested.isInvasive());
                             AppDatabase.getInstance(getContext()).getAdDao().insertAd(ad);
 
                             ExtraAd extraAd = new ExtraAd();
@@ -438,27 +438,26 @@ public class SyncAdJob extends Job {
                                     AppDatabase.getInstance(getContext()).getCarouselAdItemDao().insertCarouselItem(carouselAdItem);
 
                                 }
-
                             }
                             Log.i("Ad: ", ad.toString());
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    startDisplayAd(ad);
+                                    if (ad.isInvasive()) {
+                                        openAd(ad);
+                                    } else {
+                                        displayAd(ad);
+                                    }
                                 }
                             });
 
                         }
-
                     }
-
 
                 } else {
                     handelErrors.handleStatusCodeErrors(code, adCall, LOG_TAG);
                     syncExtraAdJob();
-
                 }
-
             }
 
             @Override
@@ -485,6 +484,46 @@ public class SyncAdJob extends Job {
                 .build()
                 .schedule();
         com.oqunet.mobad_sdk.models.Job.setJobId(jobId);
+    }
+
+    private void checkAdServiceStatus() {
+        String deviceId = MobAdUtils.getDeviceID(getContext());
+        Log.e(LOG_TAG, " Android ID: " + deviceId);
+        adServiceStatusCall = apiService.getAdServiceStatus(deviceId);
+        adServiceStatusCall.enqueue(new Callback<AdServiceStatus>() {
+            @Override
+            public void onResponse(@NonNull Call<AdServiceStatus> call, @NonNull Response<AdServiceStatus> response) {
+                int code = response.code();
+                Log.i("Status Code: ", String.valueOf(code));
+                if (response.isSuccessful()) {
+                    // 200 OK!
+                    if (response.body() != null) {
+                        Log.i(LOG_TAG, "Result: " + response.body().toString());
+                        String status = response.body().getStatus();
+                        String adServiceStatus = response.body().getAdServiceStatus();
+                        if (status != null) {
+                            if (status.equals("200")) {
+                                if (adServiceStatus.equals("Active")) {
+                                    getAd();
+                                }
+                            }
+                        }
+
+                    }
+
+                } else {
+                    handelErrors.handleStatusCodeErrors(code, adServiceStatusCall, LOG_TAG);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<AdServiceStatus> call, Throwable t) {
+                handelErrors.onFailureCall(call, t, LOG_TAG);
+            }
+
+        });
     }
 
 

@@ -21,13 +21,11 @@ public class SyncAdWork extends Worker {
 
     @NonNull
     @Override
-    public ListenableWorker.Result doWork() {
+    public Result doWork() {
         Log.i(LOG_TAG, "OnCreate SyncAdWork");
 
         phoneCallReceiver = new PhoneCallReceiver();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.intent.action.BOOT_COMPLETED");
-        intentFilter.addAction("android.intent.action.QUICKBOOT_POWERON");
         intentFilter.addAction("android.intent.action.PHONE_STATE");
         getApplicationContext().registerReceiver(phoneCallReceiver, intentFilter);
 
@@ -40,8 +38,11 @@ public class SyncAdWork extends Worker {
     @Override
     public void onStopped() {
         super.onStopped();
-        getApplicationContext().unregisterReceiver(phoneCallReceiver);
-        Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
+        if (phoneCallReceiver != null) {
+            getApplicationContext().unregisterReceiver(phoneCallReceiver);
+            Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
+        }
+
     }
 
 

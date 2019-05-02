@@ -46,6 +46,9 @@ public class Ad implements Parcelable {
     @ColumnInfo(name = "button_destination")
     private String buttonDestination;
 
+    @ColumnInfo(name = "invasive")
+    private boolean isInvasive;
+
 
     public Ad() {
     }
@@ -162,6 +165,14 @@ public class Ad implements Parcelable {
         this.buttonDestination = buttonDestination;
     }
 
+    public boolean isInvasive() {
+        return isInvasive;
+    }
+
+    public void setInvasive(boolean invasive) {
+        isInvasive = invasive;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -210,6 +221,7 @@ public class Ad implements Parcelable {
                 ", buttonName='" + buttonName + '\'' +
                 ", buttonLink='" + buttonLink + '\'' +
                 ", buttonDestination='" + buttonDestination + '\'' +
+                ", isInvasive=" + isInvasive +
                 '}';
     }
 }

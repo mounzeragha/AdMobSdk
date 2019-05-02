@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.microsoft.windowsazure.notifications.NotificationsManager;
 import com.oqunet.mobad_sdk.receiver.MyNotificationsHandler;
 import com.oqunet.mobad_sdk.receiver.PhoneCallReceiver;
 import com.oqunet.mobad_sdk.receiver.PhoneStateReceiver;
@@ -27,6 +28,7 @@ import com.oqunet.mobad_sdk.service.AdJobIntentService;
 import com.oqunet.mobad_sdk.service.AdJobService;
 import com.oqunet.mobad_sdk.service.RegistrationIntentService;
 import com.oqunet.mobad_sdk.service.SyncAdWork;
+import com.oqunet.mobad_sdk.settings.NotificationSettings;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 
 import java.util.Calendar;
@@ -35,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -81,6 +84,7 @@ public class MobAd {
         Constraints myConstraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
+
         PeriodicWorkRequest.Builder adWorkRequest =
                 new PeriodicWorkRequest.Builder(SyncAdWork.class, 15, TimeUnit.MINUTES)
                         .addTag("periodic-work-request")
@@ -91,13 +95,13 @@ public class MobAd {
 
         /**
          OneTimeWorkRequest adWorkRequest = new OneTimeWorkRequest.Builder(SyncAdWork.class)
-         .setConstraints(myConstraints)
-         .build();
+                 .build();
          WorkManager.getInstance().enqueue(adWorkRequest);
-         */
+        */
 
         registerWithNotificationHubs();
-        MyNotificationsHandler.createChannelAndHandleNotifications(activity);
+    //    MyNotificationsHandler.createChannelAndHandleNotifications(activity);
+        NotificationsManager.handleNotifications(activity, NotificationSettings.SenderId, MyNotificationsHandler.class);
 
     }
 

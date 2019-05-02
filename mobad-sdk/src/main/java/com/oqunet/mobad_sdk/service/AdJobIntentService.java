@@ -11,7 +11,7 @@ import com.oqunet.mobad_sdk.receiver.PhoneCallReceiver;
 
 public class AdJobIntentService extends JobIntentService {
     private static final String LOG_TAG = AdJobIntentService.class.getSimpleName();
-    private PhoneCallReceiver phoneCallReceiver = new PhoneCallReceiver();
+    private PhoneCallReceiver phoneCallReceiver;
     /**
      * Unique job ID for this service.
      */
@@ -29,9 +29,8 @@ public class AdJobIntentService extends JobIntentService {
 
         Log.i(LOG_TAG, "OnCreate AdJobService");
 
+        phoneCallReceiver = new PhoneCallReceiver();
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.intent.action.BOOT_COMPLETED");
-        intentFilter.addAction("android.intent.action.QUICKBOOT_POWERON");
         intentFilter.addAction("android.intent.action.PHONE_STATE");
         this.registerReceiver(phoneCallReceiver, intentFilter);
 
@@ -41,7 +40,10 @@ public class AdJobIntentService extends JobIntentService {
 
     @Override
     public void onDestroy() {
-        this.unregisterReceiver(phoneCallReceiver);
-        Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
+        if (phoneCallReceiver != null) {
+            this.unregisterReceiver(phoneCallReceiver);
+            Log.i(LOG_TAG, "PhoneCallReceiver Destroyed....");
+        }
+
     }
 }

@@ -8,10 +8,10 @@ public class NotificationSettings {
     public static String ApId = "1:386732088732:android:2dc971a43f9885b1";
 
     // Use the name of your notification hub that appears in the hub blade in the Azure Portal.
-    public static String HubName = "MobAdHub";
+    public static String HubName = "AdMobSDK";
 
     // The DefaultListenAccessSignature connection string for your hub.
-    public static String HubListenConnectionString = "Endpoint=sb://mobadhubnotification.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=ZpxXAJrv4r+qpJEdQp30NWFhW7YpvVUib6fByIF3GcM=";
+    public static String HubListenConnectionString = "Endpoint=sb://admobsdknotifications.servicebus.windows.net/;SharedAccessKeyName=DefaultListenSharedAccessSignature;SharedAccessKey=Rb2CWyJ58XIF9pJxNqz0nhgDufGKiORj9F+xrnJK1p8=";
 
     public static String HubFullAccess = "<your DefaultFullSharedAccessSignature>";
 }

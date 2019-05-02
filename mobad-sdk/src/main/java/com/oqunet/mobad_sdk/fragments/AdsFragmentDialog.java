@@ -13,8 +13,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -38,6 +40,7 @@ import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
 import com.oqunet.mobad_sdk.retrofit.HandelErrors;
 import com.oqunet.mobad_sdk.retrofit.entity.Action;
+import com.oqunet.mobad_sdk.retrofit.entity.AdServiceSetting;
 import com.oqunet.mobad_sdk.utils.Constants;
 import com.oqunet.mobad_sdk.utils.ImageUtil;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
@@ -67,6 +70,7 @@ public class AdsFragmentDialog extends DialogFragment {
     ShowingAdInterface showingAdInterface;
     ApiService apiService;
     Call<Action> adActionCall;
+    Call<AdServiceSetting> deactivateAdServiceCall;
     HandelErrors handelErrors;
     private Runnable runnable = null;
     private Handler handler = new Handler();
@@ -81,6 +85,7 @@ public class AdsFragmentDialog extends DialogFragment {
     TextView videoDuration;
     private static CountDownTimer countDownTimer;
     FrameLayout mediaControllerLayout;
+    ImageButton menuButton;
 
 
     public AdsFragmentDialog() {
@@ -171,6 +176,7 @@ public class AdsFragmentDialog extends DialogFragment {
         adDescription = dialog.findViewById(R.id.description);
         ctaButton = dialog.findViewById(R.id.btn_cta);
         closeButton = dialog.findViewById(R.id.bt_close);
+        menuButton = dialog.findViewById(R.id.menu_button);
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
@@ -189,6 +195,7 @@ public class AdsFragmentDialog extends DialogFragment {
         progressBarForVideo = dialog.findViewById(R.id.progress_bar);
         videoDuration = dialog.findViewById(R.id.duration);
         mediaControllerLayout = dialog.findViewById(R.id.media_controller_layout);
+        menuButton = dialog.findViewById(R.id.menu_button);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
         progressBarForVideo.setVisibility(View.VISIBLE);
         videoDuration.setVisibility(View.INVISIBLE);
@@ -201,6 +208,7 @@ public class AdsFragmentDialog extends DialogFragment {
         adDescription = dialog.findViewById(R.id.description);
         ctaButton = dialog.findViewById(R.id.btn_cta);
         closeButton = dialog.findViewById(R.id.bt_close);
+        menuButton = dialog.findViewById(R.id.menu_button);
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
@@ -212,6 +220,7 @@ public class AdsFragmentDialog extends DialogFragment {
         adTitle = dialog.findViewById(R.id.text);
         ctaButton = dialog.findViewById(R.id.btn_cta);
         closeButton = dialog.findViewById(R.id.bt_close);
+        menuButton = dialog.findViewById(R.id.menu_button);
         earnedCoinsLayout = dialog.findViewById(R.id.earned_coins_layout);
         earnedCoinsMessage = dialog.findViewById(R.id.message);
         earnedCoinsLayout.setVisibility(View.INVISIBLE);
@@ -263,6 +272,25 @@ public class AdsFragmentDialog extends DialogFragment {
                 dismiss();
             }
         });
+
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        int id = item.getItemId();
+                        if (id == R.id.action_deactivate) {
+                            deactivateAdService();
+                        }
+                        return true;
+                    }
+                });
+                popupMenu.inflate(R.menu.menu);
+                popupMenu.show();
+            }
+        });
     }
 
 
@@ -297,6 +325,26 @@ public class AdsFragmentDialog extends DialogFragment {
                     MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
                 }
             });
+
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+                            if (id == R.id.action_deactivate) {
+                                deactivateAdService();
+                            }
+                            return true;
+                        }
+                    });
+                    popupMenu.inflate(R.menu.menu);
+                    popupMenu.show();
+                }
+            });
+
         }
 
     }
@@ -389,6 +437,25 @@ public class AdsFragmentDialog extends DialogFragment {
                 }
             });
 
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+                            if (id == R.id.action_deactivate) {
+                                deactivateAdService();
+                            }
+                            return true;
+                        }
+                    });
+                    popupMenu.inflate(R.menu.menu);
+                    popupMenu.show();
+                }
+            });
+
         }
 
 
@@ -423,6 +490,25 @@ public class AdsFragmentDialog extends DialogFragment {
                 @Override
                 public void onClick(View view) {
                     MobAdUtils.startNewActivity(getActivity(), "com.oqunet.mobad");
+                }
+            });
+
+            menuButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            int id = item.getItemId();
+                            if (id == R.id.action_deactivate) {
+                                deactivateAdService();
+                            }
+                            return true;
+                        }
+                    });
+                    popupMenu.inflate(R.menu.menu);
+                    popupMenu.show();
                 }
             });
         }
@@ -569,6 +655,48 @@ public class AdsFragmentDialog extends DialogFragment {
             }
         }.start();
 
+    }
+
+    private void deactivateAdService() {
+        String deviceId = MobAdUtils.getDeviceID(getActivity());
+        Log.e(LOG_TAG, " Android ID: " + deviceId);
+        deactivateAdServiceCall = apiService.deactivateAdStatus(deviceId);
+        deactivateAdServiceCall.enqueue(new Callback<AdServiceSetting>() {
+            @Override
+            public void onResponse(@NonNull Call<AdServiceSetting> call, @NonNull Response<AdServiceSetting> response) {
+                int code = response.code();
+                Log.i("Status Code: ", String.valueOf(code));
+                if (response.isSuccessful()) {
+                    // 200 OK!
+                    if (response.body() != null) {
+                        Log.i(LOG_TAG, "Result: " + response.body().toString());
+                        String status = response.body().getStatus();
+                        String message = response.body().getMessage();
+                        if (status != null) {
+                            if (status.equals("200")) {
+                                MobAdUtils.displaySuccessToast(getActivity(), "Ad Service has been deactivated successfully!");
+                                dismiss();
+                            } else {
+                                MobAdUtils.displayErrorToast(getActivity(), message);
+                            }
+                        }
+
+                    }
+
+
+                } else {
+                    handelErrors.handleStatusCodeErrors(code, deactivateAdServiceCall, LOG_TAG);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<AdServiceSetting> call, Throwable t) {
+                handelErrors.onFailureCall(call, t, LOG_TAG);
+            }
+
+        });
     }
 
 

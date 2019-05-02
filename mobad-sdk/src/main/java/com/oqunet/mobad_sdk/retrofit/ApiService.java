@@ -3,6 +3,8 @@ package com.oqunet.mobad_sdk.retrofit;
 
 import com.oqunet.mobad_sdk.retrofit.entity.Action;
 import com.oqunet.mobad_sdk.retrofit.entity.Ad;
+import com.oqunet.mobad_sdk.retrofit.entity.AdServiceSetting;
+import com.oqunet.mobad_sdk.retrofit.entity.AdServiceStatus;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -26,6 +28,17 @@ public interface ApiService {
             @Field("IMEI") String deviceId,
             @Field("AdID") String adId,
             @Field("Action") String adAction);
+
+    @GET("GetProfileStatus")
+    Call<AdServiceStatus> getAdServiceStatus(
+            @Query("IMEI") String deviceId
+    );
+
+    @FormUrlEncoded
+    @PUT("OptOutProfile")
+    Call<AdServiceSetting> deactivateAdStatus(
+            @Field("IMEI") String deviceId
+    );
 
 
 
