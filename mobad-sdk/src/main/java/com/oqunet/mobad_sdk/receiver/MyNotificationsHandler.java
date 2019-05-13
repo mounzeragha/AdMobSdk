@@ -82,6 +82,8 @@ public class MyNotificationsHandler extends NotificationsHandler {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
             NotificationsManager.handleNotifications(context, NotificationSettings.ApId, MyNotificationsHandler.class);
+        } else {
+            NotificationsManager.handleNotifications(context, NotificationSettings.SenderId, MyNotificationsHandler.class);
         }
     }
 

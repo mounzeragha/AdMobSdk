@@ -380,7 +380,7 @@ public class SyncAdJob extends Job {
     }
 
     private void getAd() {
-        String deviceId = MobAdUtils.getDeviceID(getContext());
+        String deviceId = MobAdUtils.getUniqueIMEIId(getContext());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
         adCall = apiService.getAd(deviceId);
         adCall.enqueue(new Callback<Ad>() {
@@ -487,7 +487,7 @@ public class SyncAdJob extends Job {
     }
 
     private void checkAdServiceStatus() {
-        String deviceId = MobAdUtils.getDeviceID(getContext());
+        String deviceId = MobAdUtils.getUniqueIMEIId(getContext());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
         adServiceStatusCall = apiService.getAdServiceStatus(deviceId);
         adServiceStatusCall.enqueue(new Callback<AdServiceStatus>() {

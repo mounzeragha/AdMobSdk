@@ -100,8 +100,7 @@ public class MobAd {
         */
 
         registerWithNotificationHubs();
-    //    MyNotificationsHandler.createChannelAndHandleNotifications(activity);
-        NotificationsManager.handleNotifications(activity, NotificationSettings.SenderId, MyNotificationsHandler.class);
+        MyNotificationsHandler.createChannelAndHandleNotifications(activity);
 
     }
 

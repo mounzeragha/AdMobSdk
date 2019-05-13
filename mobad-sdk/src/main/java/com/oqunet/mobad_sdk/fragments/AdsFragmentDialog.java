@@ -519,7 +519,7 @@ public class AdsFragmentDialog extends DialogFragment {
     public void sendAdAction(String action) {
         apiService = ApiClient.getClient().create(ApiService.class);
         handelErrors = new HandelErrors(getActivity());
-        String deviceId = MobAdUtils.getDeviceID(getActivity());
+        String deviceId = MobAdUtils.getUniqueIMEIId(getActivity());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
         adActionCall = apiService.sendAdAction(deviceId, String.valueOf(ad.getAdId()), action);
         adActionCall.enqueue(new Callback<Action>() {
@@ -658,7 +658,7 @@ public class AdsFragmentDialog extends DialogFragment {
     }
 
     private void deactivateAdService() {
-        String deviceId = MobAdUtils.getDeviceID(getActivity());
+        String deviceId = MobAdUtils.getUniqueIMEIId(getActivity());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
         deactivateAdServiceCall = apiService.deactivateAdStatus(deviceId);
         deactivateAdServiceCall.enqueue(new Callback<AdServiceSetting>() {

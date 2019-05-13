@@ -33,6 +33,14 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
+                    <ImageButton
+                        android:id="@+id/menu_button"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:tint="@color/colorTextSecondary"
+                        app:srcCompat="@drawable/ic_more" />
+
                     <ImageView
                         android:id="@+id/advertiser_icon"
                         android:layout_width="32dp"
@@ -60,13 +68,7 @@
                     android:tint="@color/colorTextSecondary"
                     app:srcCompat="@drawable/ic_close" />
 
-                <ImageButton
-                    android:id="@+id/menu_button"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:tint="@color/colorTextSecondary"
-                    app:srcCompat="@drawable/ic_more" />
+
 
             </LinearLayout>
 

@@ -318,7 +318,7 @@ public class DisplayAd extends AppCompatActivity implements AdsFragmentDialog.Sh
     public void sendAdAction(String action) {
         apiService = ApiClient.getClient().create(ApiService.class);
         handelErrors = new HandelErrors(this);
-        String deviceId = MobAdUtils.getDeviceID(this);
+        String deviceId = MobAdUtils.getUniqueIMEIId(this);
         Log.e(LOG_TAG, " Android ID: " + deviceId);
         adActionCall = apiService.sendAdAction(deviceId, String.valueOf(adId), action);
         adActionCall.enqueue(new Callback<Action>() {
