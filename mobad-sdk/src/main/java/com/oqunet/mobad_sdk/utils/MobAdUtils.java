@@ -34,10 +34,10 @@ public class MobAdUtils {
         this.context = context;
     }
 
-    public static boolean canDrawOverlays(Context context){
+    public static boolean canDrawOverlays(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return true;
-        }else{
+        } else {
             return Settings.canDrawOverlays(context);
         }
 
@@ -67,34 +67,37 @@ public class MobAdUtils {
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
-/**
+
+    /**
+     * @SuppressLint("HardwareIds") public static String getDeviceID(Context context) {
+     * return Settings.Secure.getString(context.getContentResolver(),
+     * Settings.Secure.ANDROID_ID);
+     * }
+     */
     @SuppressLint("HardwareIds")
-    public static String getDeviceID(Context context) {
-        return Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-    }
-*/
     public static String getUniqueIMEIId(Context context) {
-        final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return "";
-        }
-
-        final String tmDevice, tmSerial, androidId;
-        tmDevice = "" + tm.getDeviceId();
-        tmSerial = "" + tm.getSimSerialNumber();
-        androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-
         /**
+         final TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+         // TODO: Consider calling
+         //    ActivityCompat#requestPermissions
+         // here to request the missing permissions, and then overriding
+         //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+         //                                          int[] grantResults)
+         // to handle the case where the user grants the permission. See the documentation
+         // for ActivityCompat#requestPermissions for more details.
+         return "";
+         }
+
+         final String tmDevice, tmSerial, androidId;
+         tmDevice = "" + tm.getDeviceId();
+         tmSerial = "" + tm.getSimSerialNumber();
+         androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+         UUID deviceUuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
+         */
+
+        String deviceId = null;
         try {
             TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -107,18 +110,19 @@ public class MobAdUtils {
                 // for ActivityCompat#requestPermissions for more details.
                 return "";
             }
-            String imei = telephonyManager.getDeviceId();
-            if (imei != null && !imei.isEmpty()) {
-                return imei;
+            assert telephonyManager != null;
+            String uniqueId = telephonyManager.getDeviceId();
+            if (uniqueId != null && !uniqueId.isEmpty()) {
+                deviceId = uniqueId;
             } else {
-                imei = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-                return imei;
+                uniqueId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+                deviceId = uniqueId;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-         */
-        return deviceUuid.toString();
+
+        return deviceId;
     }
 
     public static void displaySuccessToast(Activity activity, String message) {

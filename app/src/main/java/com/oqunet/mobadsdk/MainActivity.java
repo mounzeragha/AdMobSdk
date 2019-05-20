@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.oqunet.mobad_sdk.MobAd;
+import com.oqunet.mobad_sdk.utils.MobAdUtils;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.i(LOG_TAG, "MainActivity Started");
+        Log.e(LOG_TAG, "DEVICE ID: " + MobAdUtils.getUniqueIMEIId(this));
 
         //Initialize mobAd.
         mobAd = new MobAd(this);
