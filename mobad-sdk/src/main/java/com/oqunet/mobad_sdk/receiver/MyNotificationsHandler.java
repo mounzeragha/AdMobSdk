@@ -40,11 +40,11 @@ public class MyNotificationsHandler extends NotificationsHandler {
 
     private void sendNotification(String msg) {
 
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage("com.oqunet.mobad");
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage("com.oqunet.oqunest");
         if (intent == null) {
             // Bring user to the play store to install the app.
             intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("market://details?id=com.oqunet.mobad"));
+            intent.setData(Uri.parse("market://details?id=com.oqunet.oqunest"));
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,
