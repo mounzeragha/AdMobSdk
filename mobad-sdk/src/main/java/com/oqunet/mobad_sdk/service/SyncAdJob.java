@@ -1,15 +1,21 @@
 package com.oqunet.mobad_sdk.service;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,20 +28,31 @@ import android.widget.RelativeLayout;
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobManager;
 import com.evernote.android.job.JobRequest;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.oqunet.mobad_sdk.DisplayAd;
 import com.oqunet.mobad_sdk.R;
 import com.oqunet.mobad_sdk.database.AppDatabase;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 import com.oqunet.mobad_sdk.database.entity.ExtraAd;
+import com.oqunet.mobad_sdk.database.entity.User;
 import com.oqunet.mobad_sdk.retrofit.ApiClient;
 import com.oqunet.mobad_sdk.retrofit.ApiService;
 import com.oqunet.mobad_sdk.retrofit.HandelErrors;
 import com.oqunet.mobad_sdk.retrofit.entity.Ad;
 import com.oqunet.mobad_sdk.retrofit.entity.AdServiceStatus;
+import com.oqunet.mobad_sdk.utils.GpsUtils;
 import com.oqunet.mobad_sdk.utils.MobAdUtils;
 import com.oqunet.mobad_sdk.utils.ImageUtil;
 import com.oqunet.mobad_sdk.utils.ViewAnimation;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,9 +67,7 @@ public class SyncAdJob extends Job {
     public static final String TAG = "ad_job_tag";
     private WindowManager windowManager;
     private RelativeLayout adHeadView, removeView;
-
     private ImageView adHeadImage, removeAdHeadImage;
-
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
     private Point szWindow = new Point();
     private boolean isLeft = true;
@@ -60,7 +75,11 @@ public class SyncAdJob extends Job {
     ApiService apiService;
     Call<Ad> adCall;
     Call<AdServiceStatus> adServiceStatusCall;
+    Call<com.oqunet.mobad_sdk.retrofit.entity.Location> updateLocationCall;
     HandelErrors handelErrors;
+    private User user;
+
+
 
     @NonNull
     @Override
@@ -68,6 +87,7 @@ public class SyncAdJob extends Job {
         Log.e(LOG_TAG, "onRunJob");
         apiService = ApiClient.getClient().create(ApiService.class);
         handelErrors = new HandelErrors(getContext());
+        user = MobAdUtils.getUser(getContext());
         checkAdServiceStatus();
         return Result.SUCCESS;
     }
@@ -379,10 +399,10 @@ public class SyncAdJob extends Job {
                 .schedule();
     }
 
-    private void getAd() {
+    private void getAd(final String countryCode) {
         String deviceId = MobAdUtils.getUniqueIMEIId(getContext());
         Log.e(LOG_TAG, " Android ID: " + deviceId);
-        adCall = apiService.getAd(deviceId);
+        adCall = apiService.getAd(deviceId, countryCode);
         adCall.enqueue(new Callback<Ad>() {
             @Override
             public void onResponse(@NonNull Call<Ad> call, @NonNull Response<Ad> response) {
@@ -456,7 +476,7 @@ public class SyncAdJob extends Job {
 
                 } else {
                     handelErrors.handleStatusCodeErrors(code, adCall, LOG_TAG);
-                    syncExtraAdJob();
+                //    syncExtraAdJob();
                 }
             }
 
@@ -464,7 +484,7 @@ public class SyncAdJob extends Job {
             public void onFailure(Call<Ad> call, Throwable t) {
                 handelErrors.onFailureCall(call, t, LOG_TAG);
                 if (MobAdUtils.isNetworkAvailable()) {
-                    syncExtraAdJob();
+                //    syncExtraAdJob();
                 }
 
             }
@@ -504,18 +524,23 @@ public class SyncAdJob extends Job {
                         if (status != null) {
                             if (status.equals("200")) {
                                 if (adServiceStatus.equals("Active")) {
-                                    getAd();
+                                    if (user != null) {
+                                        if (user.getCountryCode() != null) {
+                                            Log.e(LOG_TAG, " Country Code Requested: " + user.getCountryCode());
+                                            getAd(user.getCountryCode());
+                                        } else {
+                                            getAd("");
+                                        }
+                                    } else {
+                                        getAd("");
+                                    }
                                 }
                             }
                         }
-
                     }
-
                 } else {
                     handelErrors.handleStatusCodeErrors(code, adServiceStatusCall, LOG_TAG);
-
                 }
-
             }
 
             @Override
@@ -525,7 +550,6 @@ public class SyncAdJob extends Job {
 
         });
     }
-
 
 
 }

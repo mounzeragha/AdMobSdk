@@ -9,5 +9,9 @@ public interface Constants {
     String KEY_CLICKED = "Clicked";
     String KEY_PLAYED_5SEC = "Played5Sec";
     String KEY_PLAYED_ALL = "PlayedAll";
+    public static final int READ_PHONE_STATE_PERMISSION_REQUEST = 999;
+    public static final int LOCATION_REQUEST = 1000;
+    public static final int GPS_REQUEST = 1001;
+    public static final int ALL_REQUEST_PERMISSIONS = 1002;
 
 }

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -15,15 +16,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oqunet.mobad_sdk.R;
+import com.oqunet.mobad_sdk.database.AppDatabase;
+import com.oqunet.mobad_sdk.database.entity.User;
 
-import java.util.UUID;
+import java.util.List;
 
 
 public class MobAdUtils {
@@ -66,6 +68,11 @@ public class MobAdUtils {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public boolean isGpsLocationEnabled() {
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE );
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
     /**
@@ -165,5 +172,17 @@ public class MobAdUtils {
 
         toast.setView(custom_view);
         toast.show();
+    }
+
+    public static User getUser(Context context) {
+        List<User> users = AppDatabase.getInstance(context).getUserDao().loadUsers();
+        User user = null;
+        if (users != null) {
+            if (users.size() > 0) {
+                user = AppDatabase.getInstance(context).getUserDao().loadUsers().get(0);
+            }
+        }
+        return user;
+
     }
 }

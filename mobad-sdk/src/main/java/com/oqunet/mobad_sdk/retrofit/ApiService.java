@@ -5,6 +5,7 @@ import com.oqunet.mobad_sdk.retrofit.entity.Action;
 import com.oqunet.mobad_sdk.retrofit.entity.Ad;
 import com.oqunet.mobad_sdk.retrofit.entity.AdServiceSetting;
 import com.oqunet.mobad_sdk.retrofit.entity.AdServiceStatus;
+import com.oqunet.mobad_sdk.retrofit.entity.Location;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -20,7 +21,8 @@ import retrofit2.http.Query;
 public interface ApiService {
 
     @GET("getAd")
-    Call<Ad> getAd(@Query("id") String deviceId);
+    Call<Ad> getAd(@Query("id") String deviceId,
+                   @Query("country") String countryCode);
 
     @FormUrlEncoded
     @PUT("UpdateProfileCTA")
@@ -39,6 +41,12 @@ public interface ApiService {
     Call<AdServiceSetting> deactivateAdStatus(
             @Field("IMEI") String deviceId
     );
+
+    @FormUrlEncoded
+    @PUT("UpdateUserCountry")
+    Call<Location> updateUserLocation(
+            @Field("IMEI") String deviceId,
+            @Field("Country") String country);
 
 
 

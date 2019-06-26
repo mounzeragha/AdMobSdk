@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     MobAd mobAd;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,14 +25,13 @@ public class MainActivity extends AppCompatActivity {
         //Initialize mobAd.
         mobAd = new MobAd(this);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
         //request overlay permission if it has not been granted.
         mobAd.requestDrawOverAppsPermission();
+
+        //request read phone state and location permissions if doesn't has it, and start MobAd service.
+        mobAd.checkMobAdPermissionsAndStartService();
+
+        /**
 
         //request read phone state permission.
         if (mobAd.hasReadPhoneStatePermission()) {
@@ -41,17 +41,27 @@ public class MainActivity extends AppCompatActivity {
             //request the permission.
             mobAd.requestReadPhoneStatePermission();
         }
+
+         */
+
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
-            Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
-            mobAd.startMobAdService();
+        mobAd.onRequestMobAdPermissionsResult(requestCode, permissions, grantResults);
+        /**
+        if (requestCode == Constants.ALL_REQUEST_PERMISSIONS) {
+            if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
+                Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
+                Log.i("onPermissionsGranted: ", "Location Permission Granted.");
+                mobAd.startMobAdService();
+            }
         }
+         */
 
     }
 

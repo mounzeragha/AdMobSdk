@@ -8,18 +8,21 @@ import android.content.Context;
 import com.oqunet.mobad_sdk.database.dao.AdDao;
 import com.oqunet.mobad_sdk.database.dao.CarouselAdItemDao;
 import com.oqunet.mobad_sdk.database.dao.ExtraAdDao;
+import com.oqunet.mobad_sdk.database.dao.UserDao;
 import com.oqunet.mobad_sdk.database.entity.Ad;
 import com.oqunet.mobad_sdk.database.entity.CarouselAdItem;
 import com.oqunet.mobad_sdk.database.entity.ExtraAd;
+import com.oqunet.mobad_sdk.database.entity.User;
 
 
-@Database(entities = {Ad.class, CarouselAdItem.class, ExtraAd.class}, version = 3, exportSchema = false)
+@Database(entities = {User.class, Ad.class, CarouselAdItem.class, ExtraAd.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "mobad_sdk_db";
 
     private static AppDatabase appDatabase;
 
+    public abstract UserDao getUserDao();
     public abstract AdDao getAdDao();
     public abstract ExtraAdDao getExtraAdDao();
 
