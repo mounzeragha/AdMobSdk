@@ -31,19 +31,6 @@ public class MainActivity extends AppCompatActivity {
         //request read phone state and location permissions if doesn't has it, and start MobAd service.
         mobAd.checkMobAdPermissionsAndStartService();
 
-        /**
-
-        //request read phone state permission.
-        if (mobAd.hasReadPhoneStatePermission()) {
-            //You already have the permission, just go ahead.
-            mobAd.startMobAdService();
-        } else {
-            //request the permission.
-            mobAd.requestReadPhoneStatePermission();
-        }
-
-         */
-
     }
 
     @Override
@@ -53,15 +40,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         mobAd.onRequestMobAdPermissionsResult(requestCode, permissions, grantResults);
-        /**
-        if (requestCode == Constants.ALL_REQUEST_PERMISSIONS) {
-            if (mobAd.hasReadPhoneStatePermissionGranted(requestCode, permissions, grantResults)) {
-                Log.i("onPermissionsGranted: ", "Read Phone State Permission Granted.");
-                Log.i("onPermissionsGranted: ", "Location Permission Granted.");
-                mobAd.startMobAdService();
-            }
-        }
-         */
 
     }
 

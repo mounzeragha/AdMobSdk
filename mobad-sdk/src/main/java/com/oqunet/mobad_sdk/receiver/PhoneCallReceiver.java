@@ -1,5 +1,6 @@
 package com.oqunet.mobad_sdk.receiver;
 
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +13,8 @@ import com.evernote.android.job.JobRequest;
 import com.oqunet.mobad_sdk.models.Job;
 import com.oqunet.mobad_sdk.service.AdJobCreator;
 import com.oqunet.mobad_sdk.service.SyncAdJob;
+
+import java.util.List;
 
 
 public class PhoneCallReceiver extends BroadcastReceiver {
@@ -97,4 +100,5 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         Job.setJobId(jobId);
         Log.i("NEW JOB ID: ", String.valueOf(jobId));
     }
+
 }
