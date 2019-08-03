@@ -62,7 +62,7 @@ public class CarouselAdItemsListAdapter extends RecyclerView.Adapter<RecyclerVie
         ViewHolder itemViewHolder = (ViewHolder) holder;
         final CarouselAdItem carouselAdItem = carouselAdItemsList.get(position);
 
-        ImageUtil.displayImage(itemViewHolder.image, "https://admob.azurewebsites.net" + carouselAdItem.getImage(), null);
+        ImageUtil.displayImage(itemViewHolder.image, "https://mobad.azurewebsites.net" + carouselAdItem.getImage(), null);
         itemViewHolder.headline.setText(carouselAdItem.getTitle());
         itemViewHolder.description.setText(carouselAdItem.getDescription());
         itemViewHolder.buttonCallToAction.setText(carouselAdItem.getButtonName().trim());

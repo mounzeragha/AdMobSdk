@@ -357,7 +357,7 @@ public class AdsFragmentDialog extends DialogFragment {
             adTitle.setText(ad.getAdTitle());
             adDescription.setText(ad.getAdDescription());
 
-            videoView.setVideoPath("https://admob.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
+            videoView.setVideoPath("https://mobad.azurewebsites.net/content/ad_videos/" + ad.getAdPath());
             videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
